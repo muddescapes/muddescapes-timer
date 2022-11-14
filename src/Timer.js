@@ -6,22 +6,23 @@ function Timer() {
     // stop it when needed
     const Ref = useRef(null);
     // The state for our timer
-    const [timer, setTimer] = useState('00:60:00');
+    const [timer, setTimer] = useState('60:00');
   
   
     const getTimeRemaining = (e) => {
         const total = Date.parse(e) - Date.parse(new Date());
+        console.log(total)
+        // const ms = Math.floor(total % 1000);
         const seconds = Math.floor((total / 1000) % 60);
         const minutes = Math.floor((total / 1000 / 60) % 60);
-        const hours = Math.floor((total / 1000 / 60 / 60) % 24);
         return {
-            total, hours, minutes, seconds
+            total, minutes, seconds
         };
     }
   
   
     const startTimer = (e) => {
-        let { total, hours, minutes, seconds } 
+        let { total, minutes, seconds } 
                     = getTimeRemaining(e);
         if (total >= 0) {
   
@@ -29,9 +30,9 @@ function Timer() {
             // check if less than 10 then we need to 
             // add '0' at the beginning of the variable
             setTimer(
-                (hours > 9 ? hours : '0' + hours) + ':' +
                 (minutes > 9 ? minutes : '0' + minutes) + ':'
                 + (seconds > 9 ? seconds : '0' + seconds)
+                // + ':' + (ms > 99 ? ms : ms > 9 ? '0' + ms : '00' + ms)
             )
         }
     }
@@ -42,7 +43,7 @@ function Timer() {
         // If you adjust it you should also need to
         // adjust the Endtime formula we are about
         // to code next    
-        setTimer('00:00:10');
+        setTimer('60:00');
   
         // If you try to remove this line the 
         // updating of timer Variable will be

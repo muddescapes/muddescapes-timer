@@ -1,6 +1,7 @@
 import './App.css';
 import Timer from './Timer';
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDaREdqvXD6j9CWZVv4-25t6im_8z-1SV8",
@@ -12,13 +13,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
+const db = getFirestore(app);
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Timer/>
+        <Timer db={db}/>
       </header>
     </div>
   );

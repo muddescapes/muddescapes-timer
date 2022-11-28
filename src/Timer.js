@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, updateDoc } from "firebase/firestore";
+import Backdrop from './Backdrop';
+import ConfirmationPopup from './ConfirmationPopup';
 
 function Timer({ db }) {
   // We need ref in this, because we are dealing
@@ -16,6 +18,12 @@ function Timer({ db }) {
 
   // The state for our timer
   const [timer, setTimer] = useState("60:00");
+
+  // Create List Confirmation
+  const [confirmationPopup, setConfirmationPopup] = useState(false);
+  function handleConfirmationPopup() {
+    setConfirmationPopup(!confirmationPopup);
+  }
 
   const getTimeRemaining = (e) => {
     const total = Date.parse(e) - Date.parse(new Date());
@@ -88,7 +96,16 @@ function Timer({ db }) {
 
   return (
     <div className="App">
-      <h2 onClick={onReset}>{loading ? 'loading' : timer}</h2>
+      <h2 onClick={handleConfirmationPopup}>{loading ? 'loading' : timer}</h2>
+      {confirmationPopup && (
+        <>
+          <Backdrop onClickBackdrop={handleConfirmationPopup} />
+          <ConfirmationPopup
+            onCorrectPassword={onReset}
+            onClosePopup={handleConfirmationPopup}
+          />
+        </>
+      )}
     </div>
   );
 }

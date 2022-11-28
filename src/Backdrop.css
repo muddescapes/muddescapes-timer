@@ -1,0 +1,12 @@
+.opaque-screen {
+    /* Should fill entire screen */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    /* above the rest of content but behind the dropdown */
+    z-index: 5; 
+    opacity: 50%;
+    background-color: #999999;
+  }

@@ -4,14 +4,22 @@ import { doc, updateDoc } from "firebase/firestore";
 import Backdrop from "./Backdrop";
 import ConfirmationPopup from "./ConfirmationPopup";
 import SettingsPopup from "./SettingsPopup";
+import { LoseScreen, WinScreen } from "./EndScreens";
 
 const TIMER_SECS = 3600;
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 
+function formatSecs(secs) {
+  // format time in HH:MM:SS
+  return new Date(secs * 1000).toISOString().substring(11, 19);
+}
+
 function Timer({ db }) {
   // current time in seconds since the epoch
-  const [currTime, setCurrTime] = useState(Math.floor(new Date().getTime() / 1000));
+  const [currTime, setCurrTime] = useState(
+    Math.floor(new Date().getTime() / 1000)
+  );
   // Create List Confirmation
   const [confirmationPopup, setConfirmationPopup] = useState(false);
   const [settingsPopup, setSettingsPopup] = useState(false);
@@ -25,7 +33,9 @@ function Timer({ db }) {
     setSettingsPopup(!settingsPopup);
   }
 
-  const [timer, loading, error] = useDocumentData(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC));
+  const [timer, loading, error] = useDocumentData(
+    doc(db, FIREBASE_COLLECTION, FIREBASE_DOC)
+  );
   if (error) {
     console.error(error);
   }
@@ -40,16 +50,33 @@ function Timer({ db }) {
   };
 
   const onStart = () => {
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), { startTime: currTime });
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      startTime: currTime,
+    });
   };
 
   const onReset = () => {
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), { secs: TIMER_SECS, startTime: null });
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: TIMER_SECS,
+      startTime: null,
+      win: false
+    });
   };
 
   // timer pauses when startTime is null
   const onPause = () => {
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), { secs: getRemainingSecs(), startTime: null });
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: getRemainingSecs(),
+      startTime: null,
+    });
+  };
+
+  const onWin = () => {
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: getRemainingSecs(),
+      startTime: null,
+      win: true,
+    });
   };
 
   useEffect(() => {
@@ -63,15 +90,21 @@ function Timer({ db }) {
 
   var formattedTime = null;
   if (timer) {
-    // format time in HH:MM:SS
-    formattedTime = new Date(getRemainingSecs() * 1000).toISOString().substring(11, 19);
+    formattedTime = formatSecs(getRemainingSecs());
+  }
+
+  var content = <h2>{loading ? "loading" : formattedTime}</h2>;
+  if (timer?.win) {
+    content = (
+      <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
+    );
+  } else if (getRemainingSecs() === 0) {
+    content = <LoseScreen />;
   }
 
   return (
     <div className="App">
-      <h2 onClick={handleConfirmationPopup}>
-        {loading ? "loading" : formattedTime}
-      </h2>
+      <div onClick={handleConfirmationPopup}>{content}</div>
       {confirmationPopup && (
         <>
           <Backdrop onClickBackdrop={handleConfirmationPopup} />
@@ -89,6 +122,7 @@ function Timer({ db }) {
             onResetTimer={onReset}
             onStartTimer={onStart}
             onPauseTimer={onPause}
+            onWin={onWin}
           />
         </>
       )}

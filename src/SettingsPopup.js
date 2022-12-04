@@ -24,6 +24,10 @@ function SettingsPopup(props) {
         <button onClick={callThenClose(props.onPauseTimer)}>Pause timer</button>
       </div>
       <div className="cancel-ok">
+        <button onClick={callThenClose(props.onWin)}>Win game</button>
+      </div>
+
+      <div className="cancel-ok">
         <button onClick={props.onClosePopup}>Close</button>
       </div>
     </div>

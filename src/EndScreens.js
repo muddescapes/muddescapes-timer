@@ -18,8 +18,9 @@ function EndScreen({ children, lose }) {
         {children}
         <p>Want to help next semester? Scan the QR code!</p>
         <img
-          src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Totally_not_a_Rickroll_QR_code.png"
+          src="https://i.imgur.com/dkGtSlc.png"
           alt="Interest form QR code"
+          className="end-screen__qr"
         />
       </div>
       <div className="end-screen__credits">

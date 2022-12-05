@@ -21,3 +21,8 @@
   font-family: "Dancing Script", cursive;
   font-size: 5rem;
 }
+
+.end-screen__qr {
+  width: 250px;
+  height: 250px;
+}

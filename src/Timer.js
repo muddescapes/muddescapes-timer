@@ -2,17 +2,16 @@ import { useState, useEffect } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, updateDoc } from "firebase/firestore";
 import Backdrop from "./Backdrop";
-import ConfirmationPopup from "./ConfirmationPopup";
 import SettingsPopup from "./SettingsPopup";
 import { LoseScreen, WinScreen } from "./EndScreens";
 
-const TIMER_SECS = 3600;
+const TIMER_SECS = 3599;  // 59:59 so we never need to show the hours
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 
 function formatSecs(secs) {
-  // format time in HH:MM:SS
-  return new Date(secs * 1000).toISOString().substring(11, 19);
+  // format time in MM:SS
+  return new Date(secs * 1000).toISOString().substring(14, 19);
 }
 
 function Timer({ db }) {
@@ -21,15 +20,9 @@ function Timer({ db }) {
     Math.floor(new Date().getTime() / 1000)
   );
   // Create List Confirmation
-  const [confirmationPopup, setConfirmationPopup] = useState(false);
   const [settingsPopup, setSettingsPopup] = useState(false);
 
-  function handleConfirmationPopup() {
-    setConfirmationPopup(!confirmationPopup);
-  }
-
   function handleSettingsPopup() {
-    setConfirmationPopup(false);
     setSettingsPopup(!settingsPopup);
   }
 
@@ -104,16 +97,7 @@ function Timer({ db }) {
 
   return (
     <div className="App">
-      <div onClick={handleConfirmationPopup}>{content}</div>
-      {confirmationPopup && (
-        <>
-          <Backdrop onClickBackdrop={handleConfirmationPopup} />
-          <ConfirmationPopup
-            onCorrectPassword={handleSettingsPopup}
-            onClosePopup={handleConfirmationPopup}
-          />
-        </>
-      )}
+      <div onClick={handleSettingsPopup}>{content}</div>
       {settingsPopup && (
         <>
           <Backdrop onClickBackdrop={handleSettingsPopup} />

@@ -1,6 +1,17 @@
 import "./Popup.css";
+import { useEffect } from "react";
 
 function SettingsPopup(props) {
+  useEffect(() => {
+    function handleEscape(e) {
+      if (e.key === "Escape") {
+        props.onClosePopup();
+      }
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [props])
+
   function callThenClose(fn) {
     return () => {
       fn();
@@ -11,11 +22,6 @@ function SettingsPopup(props) {
   return (
     <div
       className="popup"
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
-          props.onClosePopup();
-        }
-      }}
     >
       <div className="prompt">Settings</div>
       <div className="cancel-ok">

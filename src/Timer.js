@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, updateDoc } from "firebase/firestore";
 import Backdrop from "./Backdrop";
 import SettingsPopup from "./SettingsPopup";
 import { LoseScreen, WinScreen } from "./EndScreens";
+import ReactAudioPlayer from "react-audio-player";
 
 const TIMER_SECS = 3599;  // 59:59 so we never need to show the hours
 const FIREBASE_COLLECTION = "timers";
@@ -15,6 +16,10 @@ function formatSecs(secs) {
 }
 
 function Timer({ db }) {
+  // ref for audio player to play sound when settings popup opens
+  // cannot autoplay due to browser restrictions (must interact first)
+  const audioRef = React.createRef();
+
   // current time in seconds since the epoch
   const [currTime, setCurrTime] = useState(
     Math.floor(new Date().getTime() / 1000)
@@ -24,6 +29,8 @@ function Timer({ db }) {
 
   function handleSettingsPopup() {
     setSettingsPopup(!settingsPopup);
+    // start playing background music
+    audioRef.current.audioEl.current.play();
   }
 
   const [timer, loading, error] = useDocumentData(
@@ -86,7 +93,7 @@ function Timer({ db }) {
     formattedTime = formatSecs(getRemainingSecs());
   }
 
-  var content = <h2>{loading ? "loading" : formattedTime}</h2>;
+  var content = <p style={{fontSize: "10vw"}}>{loading ? "loading" : formattedTime}</p>;
   if (timer?.win) {
     content = (
       <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
@@ -97,6 +104,7 @@ function Timer({ db }) {
 
   return (
     <div className="App">
+      <ReactAudioPlayer src="bg.mp3" loop ref={(e) => {audioRef.current = e}}/>
       <div onClick={handleSettingsPopup}>{content}</div>
       {settingsPopup && (
         <>

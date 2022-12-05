@@ -1,4 +1,5 @@
 import "./EndScreens.css";
+import ReactAudioPlayer from "react-audio-player";
 
 function EndScreen({ children, lose }) {
   return (
@@ -50,6 +51,7 @@ export function WinScreen({ timeRemaining }) {
       <h1 className="end-screen__thanks">Thank you!</h1>
       <h1>CONGRATULATIONS!</h1>
       <p>You escaped the library in {timeRemaining}!</p>
+      <ReactAudioPlayer src="win.mp3" autoPlay />
     </EndScreen>
   );
 }
@@ -59,6 +61,7 @@ export function LoseScreen() {
     <EndScreen lose>
       <h1>YOU DIED</h1>
       <h2>Better luck next time!</h2>
+      <ReactAudioPlayer src="lose.mp3" autoPlay />
     </EndScreen>
   );
 }

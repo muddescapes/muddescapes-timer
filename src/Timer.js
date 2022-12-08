@@ -1,3 +1,4 @@
+import "./Timer.css";
 import React, { useState, useEffect } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, updateDoc } from "firebase/firestore";
@@ -6,7 +7,7 @@ import SettingsPopup from "./SettingsPopup";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
 
-const TIMER_SECS = 3599;  // 59:59 so we never need to show the hours
+const TIMER_SECS = 3599; // 59:59 so we never need to show the hours
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 
@@ -59,7 +60,7 @@ function Timer({ db }) {
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
-      win: false
+      win: false,
     });
   };
 
@@ -93,7 +94,12 @@ function Timer({ db }) {
     formattedTime = formatSecs(getRemainingSecs());
   }
 
-  var content = <p style={{fontSize: "10vw"}}>{loading ? "loading" : formattedTime}</p>;
+  var content = (
+    <>
+      <p class="timer">{loading ? "loading" : formattedTime}</p>
+      <div class="timer-text">SPEAK THE NAME OF THE KILLER TO ESCAPE</div>
+    </>
+  );
   if (timer?.win) {
     content = (
       <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
@@ -104,7 +110,13 @@ function Timer({ db }) {
 
   return (
     <div className="App">
-      <ReactAudioPlayer src="bg.mp3" loop ref={(e) => {audioRef.current = e}}/>
+      <ReactAudioPlayer
+        src="bg.mp3"
+        loop
+        ref={(e) => {
+          audioRef.current = e;
+        }}
+      />
       <div onClick={handleSettingsPopup}>{content}</div>
       {settingsPopup && (
         <>

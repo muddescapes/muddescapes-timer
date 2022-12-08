@@ -1,108 +1,120 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { doc, updateDoc } from "firebase/firestore";
-import Backdrop from './Backdrop';
-import ConfirmationPopup from './ConfirmationPopup';
+import Backdrop from "./Backdrop";
+import SettingsPopup from "./SettingsPopup";
+import { LoseScreen, WinScreen } from "./EndScreens";
+import ReactAudioPlayer from "react-audio-player";
+
+const TIMER_SECS = 3599;  // 59:59 so we never need to show the hours
+const FIREBASE_COLLECTION = "timers";
+const FIREBASE_DOC = "timer1";
+
+function formatSecs(secs) {
+  // format time in MM:SS
+  return new Date(secs * 1000).toISOString().substring(14, 19);
+}
 
 function Timer({ db }) {
-  // We need ref in this, because we are dealing
-  // with JS setInterval to keep track of it and
-  // stop it when needed
-  const Ref = useRef(null);
-  const [counter, loading, error] = useDocumentData(
-    doc(db, "counter-collection", "counter"),
-    {
-      snapshotListenOptions: { includeMetadataChanges: true },
-    }
+  // ref for audio player to play sound when settings popup opens
+  // cannot autoplay due to browser restrictions (must interact first)
+  const audioRef = React.createRef();
+
+  // current time in seconds since the epoch
+  const [currTime, setCurrTime] = useState(
+    Math.floor(new Date().getTime() / 1000)
   );
-
-  // The state for our timer
-  const [timer, setTimer] = useState("60:00");
-
   // Create List Confirmation
-  const [confirmationPopup, setConfirmationPopup] = useState(false);
-  function handleConfirmationPopup() {
-    setConfirmationPopup(!confirmationPopup);
+  const [settingsPopup, setSettingsPopup] = useState(false);
+
+  function handleSettingsPopup() {
+    setSettingsPopup(!settingsPopup);
+    // start playing background music
+    audioRef.current.audioEl.current.play();
   }
 
-  const getTimeRemaining = (e) => {
-    const total = Date.parse(e) - Date.parse(new Date());
-    // const ms = Math.floor(total % 1000);
-    const seconds = Math.floor((total / 1000) % 60);
-    const minutes = Math.floor((total / 1000 / 60) % 60);
-    return {
-      total,
-      minutes,
-      seconds,
-    };
-  };
+  const [timer, loading, error] = useDocumentData(
+    doc(db, FIREBASE_COLLECTION, FIREBASE_DOC)
+  );
+  if (error) {
+    console.error(error);
+  }
 
-  const startTimer = (e) => {
-    let { total, minutes, seconds } = getTimeRemaining(e);
-    if (total >= 0) {
-      // update the timer
-      // check if less than 10 then we need to
-      // add '0' at the beginning of the variable
-      setTimer(
-        (minutes > 9 ? minutes : "0" + minutes) +
-          ":" +
-          (seconds > 9 ? seconds : "0" + seconds)
-        // + ':' + (ms > 99 ? ms : ms > 9 ? '0' + ms : '00' + ms)
-      );
+  const getRemainingSecs = () => {
+    if (timer) {
+      return timer.startTime
+        ? Math.max(timer.secs - (currTime - timer.startTime), 0)
+        : timer.secs;
     }
+    return -1;
   };
 
-  const clearTimer = (e) => {
-    // If you adjust it you should also need to
-    // adjust the Endtime formula we are about
-    // to code next
-    setTimer("60:00");
-
-    // If you try to remove this line the
-    // updating of timer Variable will be
-    // after 1000ms or 1sec
-    if (Ref.current) clearInterval(Ref.current);
-    const id = setInterval(() => {
-      startTimer(e);
-    }, 1000);
-    Ref.current = id;
+  const onStart = () => {
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      startTime: currTime,
+    });
   };
 
-  const getDeadTime = () => {
-    let deadline = new Date();
-
-    // This is where you need to adjust if
-    // you entend to add more time
-    deadline.setHours(deadline.getHours() + 1);
-    return deadline;
-  };
-
-  // We can use useEffect so that when the component
-  // mounts the timer will start as soon as possible
-
-  // We put empty array to act as componentDid
-  // mount only
-  useEffect(() => {
-    clearTimer(getDeadTime());
-  }, [counter]);
-
-  // Another way to call the clearTimer() to start
-  // the countdown is via action event from the
-  // button first we create function to be called
-  // by the button
   const onReset = () => {
-    updateDoc(doc(db, 'counter-collection', 'counter'), { value: counter.value + 1 });
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: TIMER_SECS,
+      startTime: null,
+      win: false
+    });
   };
+
+  // timer pauses when startTime is null
+  const onPause = () => {
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: getRemainingSecs(),
+      startTime: null,
+    });
+  };
+
+  const onWin = () => {
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: getRemainingSecs(),
+      startTime: null,
+      win: true,
+    });
+  };
+
+  useEffect(() => {
+    // shouldn't cause any re-renders if currTime is not changed,
+    // so updating every 100ms should be fine
+    const interval = setInterval(() => {
+      setCurrTime(Math.floor(new Date().getTime() / 1000));
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  var formattedTime = null;
+  if (timer) {
+    formattedTime = formatSecs(getRemainingSecs());
+  }
+
+  var content = <p style={{fontSize: "10vw"}}>{loading ? "loading" : formattedTime}</p>;
+  if (timer?.win) {
+    content = (
+      <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
+    );
+  } else if (getRemainingSecs() === 0) {
+    content = <LoseScreen />;
+  }
 
   return (
     <div className="App">
-      <h2 onClick={handleConfirmationPopup}>{loading ? 'loading' : timer}</h2>
-      {confirmationPopup && (
+      <ReactAudioPlayer src="bg.mp3" loop ref={(e) => {audioRef.current = e}}/>
+      <div onClick={handleSettingsPopup}>{content}</div>
+      {settingsPopup && (
         <>
-          <Backdrop onClickBackdrop={handleConfirmationPopup} />
-          <ConfirmationPopup
-            onCorrectPassword={onReset}
-            onClosePopup={handleConfirmationPopup}
+          <Backdrop onClickBackdrop={handleSettingsPopup} />
+          <SettingsPopup
+            onClosePopup={handleSettingsPopup}
+            onResetTimer={onReset}
+            onStartTimer={onStart}
+            onPauseTimer={onPause}
+            onWin={onWin}
           />
         </>
       )}

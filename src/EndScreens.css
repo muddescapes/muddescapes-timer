@@ -1,14 +1,14 @@
 .end-screen {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr;
   width: 100vw;
   height: 100vh;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   align-items: center;
 }
 
 .end-screen__credits > p:not(.end-screen__title) {
-  margin: 0;
+  margin: 0.5rem;
   padding: 0;
 }
 
@@ -19,7 +19,7 @@
 
 .end-screen__thanks {
   font-family: "Dancing Script", cursive;
-  font-size: 5rem;
+  font-size: 3rem;
 }
 
 .end-screen__qr {

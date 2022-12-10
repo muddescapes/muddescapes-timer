@@ -31,7 +31,9 @@ function Timer({ db }) {
   function handleSettingsPopup() {
     setSettingsPopup(!settingsPopup);
     // start playing background music
-    audioRef.current.audioEl.current.play();
+    if (audioRef.current) {
+      audioRef.current.audioEl.current.play();
+    }
   }
 
   const [timer, loading, error] = useDocumentData(
@@ -96,8 +98,15 @@ function Timer({ db }) {
 
   var content = (
     <>
-      <p class="timer">{loading ? "loading" : formattedTime}</p>
-      <div class="timer-text">SPEAK THE NAME OF THE KILLER TO ESCAPE</div>
+      <ReactAudioPlayer
+        src="bg.mp3"
+        loop
+        ref={(e) => {
+          audioRef.current = e;
+        }}
+      />
+      <p className="timer">{loading ? "loading" : formattedTime}</p>
+      <div className="timer-text">SPEAK THE NAME OF THE KILLER TO ESCAPE</div>
     </>
   );
   if (timer?.win) {
@@ -110,13 +119,6 @@ function Timer({ db }) {
 
   return (
     <div className="App">
-      <ReactAudioPlayer
-        src="bg.mp3"
-        loop
-        ref={(e) => {
-          audioRef.current = e;
-        }}
-      />
       <div onClick={handleSettingsPopup}>{content}</div>
       {settingsPopup && (
         <>

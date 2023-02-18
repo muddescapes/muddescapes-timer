@@ -5,4 +5,11 @@
 
 .timer-text {
   font-size: 3vw;
+  text-align: left;
+}
+
+.checkbox {
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
 }

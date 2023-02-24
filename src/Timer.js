@@ -19,7 +19,7 @@ function formatSecs(secs) {
 function Timer({ db }) {
   // ref for audio player to play sound when settings popup opens
   // cannot autoplay due to browser restrictions (must interact first)
-  const audioRef = React.createRef();
+  const audioRef = React.useRef();
 
   // current time in seconds since the epoch
   const [currTime, setCurrTime] = useState(
@@ -31,9 +31,7 @@ function Timer({ db }) {
   function handleSettingsPopup() {
     setSettingsPopup(!settingsPopup);
     // start playing background music
-    if (audioRef.current) {
-      audioRef.current.audioEl.current.play();
-    }
+    audioRef.current?.audioEl.current.play();
   }
 
   const [timer, loading, error] = useDocumentData(

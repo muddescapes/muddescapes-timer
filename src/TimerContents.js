@@ -2,6 +2,7 @@ import "./TimerContents.css";
 import React, { useState, useEffect } from "react";
 import mqtt from "mqtt";
 import checkmark from "./images/checkmark.svg";
+import ReactAudioPlayer from "react-audio-player";
 
 const CHECKBOXES = [
   {
@@ -20,6 +21,7 @@ const CHECKBOXES = [
 
 export default function TimerContents(props) {
   const { formattedTime } = props;
+  const audioRef = React.useRef();
   let [checkboxStates, setCheckboxStates] = useState(
     CHECKBOXES.map(() => false)
   );
@@ -43,6 +45,8 @@ export default function TimerContents(props) {
     client.on("message", (topic, message) => {
       const idx = CHECKBOXES.findIndex(({ topic: t }) => t === topic);
       if (idx >= 0) {
+        audioRef.current?.audioEl.current.play();
+
         setCheckboxStates((curr) => {
           const newStates = [...curr];
           newStates[idx] = message.toString() === "1";
@@ -65,6 +69,12 @@ export default function TimerContents(props) {
         height: "100vh",
       }}
     >
+      <ReactAudioPlayer
+        src="step_complete.mp3"
+        ref={(e) => {
+          audioRef.current = e;
+        }}
+      />
       <div className="mondrian-grid">
         <div
           className="mondrian-grid__blue"

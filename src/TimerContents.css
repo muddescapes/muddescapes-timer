@@ -1,11 +1,46 @@
-.timer {
-  font-size: 10vw;
-  margin: 5vw;
+.mondrian-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(11, calc((100vh - 100px) / 15));
+  grid-template-rows: repeat(14, calc((100vh - 100px) / 15));
+  padding: 0.6vh;
+  gap: 0.6vh;
+  background-color: #231f20;
 }
 
-.timer-text {
-  font-size: 3vw;
-  text-align: left;
+.mondrian-grid__blue {
+  background-color: #344da0;
+}
+
+.mondrian-grid__red {
+  background-color: #e20e1e;
+}
+
+.mondrian-grid__yellow {
+  background-color: #ffce00;
+}
+
+.mondrian-grid__white {
+  background-color: #ffffff;
+}
+
+.timer {
+  padding: 1vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18vh;
+}
+
+.step-title {
+  padding: 1vh;
+  display: flex;
+  align-items: center;
+  font-size: 4vh;
+}
+
+.step-title[data-completed="true"] {
+  text-decoration: line-through;
+  color: #898989;
 }
 
 .checkbox {

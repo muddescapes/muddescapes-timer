@@ -1,5 +1,4 @@
-import './App.css';
-import Timer from './Timer';
+import Timer from "./Timer";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
@@ -9,20 +8,14 @@ const firebaseConfig = {
   projectId: "muddescapes-timer",
   storageBucket: "muddescapes-timer.appspot.com",
   messagingSenderId: "6923917482",
-  appId: "1:6923917482:web:8a9c364e7f20feb8a858d3"
+  appId: "1:6923917482:web:8a9c364e7f20feb8a858d3",
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <Timer db={db}/>
-      </header>
-    </div>
-  );
+  return <Timer db={db} />;
 }
 
 export default App;

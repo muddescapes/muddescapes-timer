@@ -1,6 +1,8 @@
+/* 22.625 to 31.625 */
+
 .mondrian-grid {
   display: inline-grid;
-  grid-template-columns: repeat(11, calc((100vh - 100px) / 15));
+  grid-template-columns: repeat(11, calc((100vh - 100px) / 17));
   grid-template-rows: repeat(14, calc((100vh - 100px) / 15));
   padding: 0.6vh;
   gap: 0.6vh;

@@ -20,11 +20,17 @@ const CHECKBOXES = [
 ];
 
 export default function TimerContents(props) {
-  const { formattedTime } = props;
+  const { formattedTime, onWin } = props;
   const audioRef = React.useRef();
   let [checkboxStates, setCheckboxStates] = useState(
     CHECKBOXES.map(() => false)
   );
+
+  useEffect(() => {
+    if (checkboxStates.every((c) => c)) {
+      onWin();
+    }
+  }, [checkboxStates, onWin]);
 
   useEffect(() => {
     const client = mqtt.connect("wss://broker.hivemq.com:8884", {

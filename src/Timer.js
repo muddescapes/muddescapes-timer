@@ -103,7 +103,10 @@ function Timer({ db }) {
           audioRef.current = e;
         }}
       />
-      <TimerContents formattedTime={loading ? "loading" : formattedTime} />
+      <TimerContents
+        onWin={onWin}
+        formattedTime={loading ? "loading" : formattedTime}
+      />
     </>
   );
   if (timer?.win) {

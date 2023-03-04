@@ -51,7 +51,9 @@ export default function TimerContents(props) {
     client.on("message", (topic, message) => {
       const idx = CHECKBOXES.findIndex(({ topic: t }) => t === topic);
       if (idx >= 0) {
-        audioRef.current?.audioEl.current.play();
+        if (message.toString() === "1") {
+          audioRef.current?.audioEl.current.play();
+        }
 
         setCheckboxStates((curr) => {
           const newStates = [...curr];

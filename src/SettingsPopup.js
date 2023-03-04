@@ -10,7 +10,7 @@ function SettingsPopup(props) {
     }
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [props])
+  }, [props]);
 
   function callThenClose(fn) {
     return () => {
@@ -20,14 +20,12 @@ function SettingsPopup(props) {
   }
 
   return (
-    <div
-      className="popup"
-    >
+    <div className="popup">
       <div className="prompt">Settings</div>
       <div className="cancel-ok">
-        <button onClick={callThenClose(props.onResetTimer)}>Reset timer</button>
-        <button onClick={callThenClose(props.onStartTimer)}>Start timer</button>
-        <button onClick={callThenClose(props.onPauseTimer)}>Pause timer</button>
+        <button onClick={callThenClose(props.onResetTimer)}>Reset</button>
+        <button onClick={callThenClose(props.onStartTimer)}>Start</button>
+        <button onClick={callThenClose(props.onPauseTimer)}>Pause</button>
       </div>
       <div className="cancel-ok">
         <button onClick={callThenClose(props.onWin)}>Win game</button>

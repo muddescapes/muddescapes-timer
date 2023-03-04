@@ -9,6 +9,7 @@
   transform: translate(-50%, -50%);
   text-align: center;
   border-radius: 10px;
+  font-size: 2rem;
 }
 .prompt {
   color: black;
@@ -18,13 +19,12 @@
   padding-top: 20px;
   display: flex;
   justify-content: space-evenly;
-  width: 200px;
 }
 
 .cancel-ok button {
+  font-size: 1.5rem;
   border: 1px solid #494949;
   border-radius: 5px;
-  width: 60px;
   color: #494949;
   padding: 0 6px;
   text-decoration: none;

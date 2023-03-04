@@ -10,11 +10,11 @@ const CHECKBOXES = [
     name: "Disable the security cameras",
   },
   {
-    topic: "muddescapes/data/Puzzle 2/Variable 2",
+    topic: "muddescapes/data/Final Pedestal/Hammer Stolen",
     name: "Steal the most precious artifact",
   },
   {
-    topic: "muddescapes/data/Puzzle 3/Variable 3",
+    topic: "muddescapes/data/Fingerprint Sensor/Alarm Disarmed",
     name: "Disarm the alarm",
   },
 ];

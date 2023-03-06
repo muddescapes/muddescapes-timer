@@ -3,6 +3,7 @@ import ReactAudioPlayer from "react-audio-player";
 import hammer from "./images/hammer.png";
 import camera from "./images/camera.png";
 import alarm from "./images/alarm.png";
+import question from "./images/question.png";
 
 function EndScreen({ checkboxStates, timeRemaining }) {
   return (
@@ -68,7 +69,7 @@ function EndScreen({ checkboxStates, timeRemaining }) {
           />
           <img
             className={checkboxStates[2] ? "task-success" : "task-failure"}
-            src={alarm}
+            src={checkboxStates[1] ? alarm : question}
             alt="Alarm"
           />
         </div>

@@ -109,12 +109,12 @@ function Timer({ db }) {
       />
     </>
   );
-  if (timer?.win) {
+  if (!timer?.win) {
     content = (
       <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
     );
   } else if (getRemainingSecs() === 0) {
-    content = <LoseScreen />;
+    content = <LoseScreen checkboxStates={[false, false, false]} />;
   }
 
   return (

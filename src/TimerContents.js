@@ -1,72 +1,10 @@
 import "./TimerContents.css";
-import React, { useState, useEffect } from "react";
-import mqtt from "mqtt";
+import React from "react";
 import checkmark from "./images/checkmark.svg";
-import ReactAudioPlayer from "react-audio-player";
-
-const CHECKBOXES = [
-  {
-    topic: "muddescapes/data/Security Cameras/disabled",
-    name: "Disable the security cameras",
-  },
-  {
-    topic: "muddescapes/data/Final Pedestal/Hammer Stolen",
-    name: "Steal the most precious artifact",
-  },
-  {
-    topic: "muddescapes/data/Fingerprint Sensor/Alarm Disarmed",
-    name: "Disarm the alarm",
-  },
-];
+import { CHECKBOXES } from "./hooks";
 
 export default function TimerContents(props) {
-  const { formattedTime, onWin } = props;
-  const audioRef = React.useRef();
-  let [checkboxStates, setCheckboxStates] = useState(
-    CHECKBOXES.map(() => false)
-  );
-
-  useEffect(() => {
-    if (checkboxStates.every((c) => c)) {
-      onWin();
-    }
-  }, [checkboxStates, onWin]);
-
-  useEffect(() => {
-    const client = mqtt.connect("wss://broker.hivemq.com:8884", {
-      path: "/mqtt",
-    });
-
-    client.on("connect", () => {
-      console.debug("connected");
-
-      CHECKBOXES.forEach(({ topic }) => {
-        client.subscribe(topic, { qos: 2 });
-      });
-
-      // request variable updates from puzzles
-      client.publish("muddescapes", "", { qos: 1 });
-    });
-
-    client.on("message", (topic, message) => {
-      const idx = CHECKBOXES.findIndex(({ topic: t }) => t === topic);
-      if (idx >= 0) {
-        if (message.toString() === "1") {
-          audioRef.current?.audioEl.current.play();
-        }
-
-        setCheckboxStates((curr) => {
-          const newStates = [...curr];
-          newStates[idx] = message.toString() === "1";
-          return newStates;
-        });
-      }
-    });
-
-    return () => {
-      client.end();
-    };
-  }, []);
+  const { formattedTime, checkboxStates } = props;
 
   return (
     <div
@@ -77,12 +15,6 @@ export default function TimerContents(props) {
         height: "100vh",
       }}
     >
-      <ReactAudioPlayer
-        src="step_complete.mp3"
-        ref={(e) => {
-          audioRef.current = e;
-        }}
-      />
       <div className="mondrian-grid">
         <div
           className="mondrian-grid__blue"

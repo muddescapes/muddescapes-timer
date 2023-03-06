@@ -6,6 +6,7 @@ import SettingsPopup from "./SettingsPopup";
 import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
+import { useCheckboxStates } from "./hooks";
 
 const TIMER_SECS = 3599; // 59:59 so we never need to show the hours
 const FIREBASE_COLLECTION = "timers";
@@ -19,7 +20,8 @@ function formatSecs(secs) {
 function Timer({ db }) {
   // ref for audio player to play sound when settings popup opens
   // cannot autoplay due to browser restrictions (must interact first)
-  const audioRef = React.useRef();
+  const bgAudioRef = React.useRef();
+  const step1AudioRef = React.useRef();
 
   // current time in seconds since the epoch
   const [currTime, setCurrTime] = useState(
@@ -31,7 +33,7 @@ function Timer({ db }) {
   function handleSettingsPopup() {
     setSettingsPopup(!settingsPopup);
     // start playing background music
-    audioRef.current?.audioEl.current.play();
+    bgAudioRef.current?.audioEl.current.play();
   }
 
   const [timer, loading, error] = useDocumentData(
@@ -56,14 +58,6 @@ function Timer({ db }) {
     });
   };
 
-  const onReset = () => {
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: TIMER_SECS,
-      startTime: null,
-      win: false,
-    });
-  };
-
   // timer pauses when startTime is null
   const onPause = () => {
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
@@ -77,6 +71,22 @@ function Timer({ db }) {
       secs: getRemainingSecs(),
       startTime: null,
       win: true,
+    });
+  };
+
+  const [checkboxStates, resetCheckboxStates] = useCheckboxStates({
+    onWin,
+    onTaskComplete: (i) => {
+      step1AudioRef.current?.audioEl.current.play();
+    },
+  });
+
+  const onReset = () => {
+    resetCheckboxStates();
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      secs: TIMER_SECS,
+      startTime: null,
+      win: false,
     });
   };
 
@@ -100,21 +110,27 @@ function Timer({ db }) {
         src="bg.mp3"
         loop
         ref={(e) => {
-          audioRef.current = e;
+          bgAudioRef.current = e;
+        }}
+      />
+      <ReactAudioPlayer
+        src="step_complete.mp3"
+        ref={(e) => {
+          step1AudioRef.current = e;
         }}
       />
       <TimerContents
-        onWin={onWin}
+        checkboxStates={checkboxStates}
         formattedTime={loading ? "loading" : formattedTime}
       />
     </>
   );
-  if (!timer?.win) {
+  if (timer?.win) {
     content = (
       <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
     );
   } else if (getRemainingSecs() === 0) {
-    content = <LoseScreen checkboxStates={[false, false, false]} />;
+    content = <LoseScreen checkboxStates={checkboxStates} />;
   }
 
   return (

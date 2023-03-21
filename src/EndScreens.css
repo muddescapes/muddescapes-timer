@@ -48,9 +48,9 @@
 }
 
 .end-screen {
-  --wall-length: 30cm;
+  --wall-length: 40cm;
   --inner-border: 40px solid #231f20;
-  --camera-distance: 14cm;
+  --camera-distance: 18cm;
   width: calc(11 * (((100vh - 100px) / 17)) + 10 * 0.6vh);
   height: calc(14 * (((100vh - 100px) / 15)) + 13 * 0.6vh);
   border: 0.6vh solid #231f20;
@@ -64,8 +64,9 @@
   left: 0;
   right: 0;
   color: white;
-  background-color: rgb(236, 110, 101, 0.5);
+  background-color: #00800085;
   text-align: center;
+  padding-bottom: 1vh;
 }
 
 .header > * {
@@ -97,7 +98,7 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: center;
-  font-size: 5.5vh;
+  font-size: 5vh;
   padding: 3vh;
 }
 
@@ -155,16 +156,24 @@
 
 .back {
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
   animation: zoomInOutBack cubic-bezier(0.98, 0, 0.16, 1.02) 30s infinite;
   height: 100%;
 }
 
-.back > img {
+.back > div {
   width: 25%;
   object-fit: contain;
-  animation: bounce 5s linear infinite;
+  gap: 4vh;
+  display: flex;
+  justify-content: center;
+}
+
+.back > div > img {
+  width: 100%;
+  object-fit: contain;
 }
 
 .task-success {

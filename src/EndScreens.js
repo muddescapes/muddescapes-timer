@@ -3,7 +3,8 @@ import ReactAudioPlayer from "react-audio-player";
 import hammer from "./images/hammer.png";
 import camera from "./images/camera.png";
 import alarm from "./images/alarm.png";
-import question from "./images/question.png";
+import green_checkmark from "./images/green_checkmark.svg";
+import red_x from "./images/red_x.svg";
 
 function EndScreen({ checkboxStates, timeRemaining }) {
   return (
@@ -57,26 +58,56 @@ function EndScreen({ checkboxStates, timeRemaining }) {
           <div className="carpet"></div>
         </div>
         <div className="back">
-          <img
-            className={checkboxStates[0] ? "task-success" : "task-failure"}
-            src={hammer}
-            alt="Hammer"
-          />
-          <img
-            className={checkboxStates[1] ? "task-success" : "task-failure"}
-            src={camera}
-            alt="Camera"
-          />
-          <img
-            className={checkboxStates[2] ? "task-success" : "task-failure"}
-            src={checkboxStates[1] ? alarm : question}
-            alt="Alarm"
-          />
+          <div>
+            <img
+              className={checkboxStates[0] ? "task-success" : "task-failure"}
+              src={camera}
+              alt="Camera"
+            />
+            {checkboxStates[0] ? (
+              <img src={green_checkmark} alt="Checkmark" />
+            ) : (
+              <img src={red_x} alt="x" />
+            )}
+          </div>
+          <div>
+            <img
+              className={checkboxStates[1] ? "task-success" : "task-failure"}
+              src={hammer}
+              alt="Hammer"
+            />
+            {checkboxStates[1] ? (
+              <img src={green_checkmark} alt="Checkmark" />
+            ) : (
+              <img src={red_x} alt="x" />
+            )}
+          </div>
+          <div>
+            <img
+              className={checkboxStates[2] ? "task-success" : "task-failure"}
+              src={alarm}
+              alt="Alarm"
+            />
+            {checkboxStates[2] ? (
+              <img src={green_checkmark} alt="Checkmark" />
+            ) : (
+              <img src={red_x} alt="x" />
+            )}
+          </div>
         </div>
-        {timeRemaining && (
+        {timeRemaining ? (
           <div className="header">
             <h2>Congratulations!</h2>
             <p>You finished in: {timeRemaining}</p>
+          </div>
+        ) : (
+          <div className="header">
+            <h2>Nice try!</h2>
+            <p>
+              You completed{" "}
+              {checkboxStates.map((s) => (s ? 1 : 0)).reduce((a, b) => a + b)}/3
+              objectives
+            </p>
           </div>
         )}
       </div>

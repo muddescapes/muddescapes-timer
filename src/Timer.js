@@ -22,6 +22,7 @@ function Timer({ db }) {
   // cannot autoplay due to browser restrictions (must interact first)
   const bgAudioRef = React.useRef();
   const step1AudioRef = React.useRef();
+  const step2AudioRef = React.useRef();
 
   // current time in seconds since the epoch
   const [currTime, setCurrTime] = useState(
@@ -67,6 +68,11 @@ function Timer({ db }) {
   };
 
   const onWin = () => {
+    // prevent unnecessary win calls
+    if (timer?.win) {
+      return;
+    }
+
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: getRemainingSecs(),
       startTime: null,
@@ -77,7 +83,11 @@ function Timer({ db }) {
   const [checkboxStates, resetCheckboxStates] = useCheckboxStates({
     onWin,
     onTaskComplete: (i) => {
-      step1AudioRef.current?.audioEl.current.play();
+      if (i === 0) {
+        step1AudioRef.current?.audioEl.current.play();
+      } else if (i === 1) {
+        step2AudioRef.current?.audioEl.current.play();
+      }
     },
   });
 
@@ -114,9 +124,15 @@ function Timer({ db }) {
         }}
       />
       <ReactAudioPlayer
-        src="step_complete.mp3"
+        src="security_cameras_disabled_sfx.mp3"
         ref={(e) => {
           step1AudioRef.current = e;
+        }}
+      />
+      <ReactAudioPlayer
+        src="hammer_stolen_sfx.mp3"
+        ref={(e) => {
+          step2AudioRef.current = e;
         }}
       />
       <TimerContents

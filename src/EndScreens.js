@@ -122,7 +122,7 @@ export function WinScreen({ timeRemaining }) {
         timeRemaining={timeRemaining}
         checkboxStates={[true, true, true]}
       ></EndScreen>
-      <ReactAudioPlayer src="win.mp3" autoPlay />
+      <ReactAudioPlayer src="disable_alarm_sfx.mp3" autoPlay />
     </>
   );
 }

@@ -161,6 +161,8 @@
   align-items: center;
   animation: zoomInOutBack cubic-bezier(0.98, 0, 0.16, 1.02) 30s infinite;
   height: 100%;
+  background-image: url("images/timer_back_wall.png");
+  background-size: contain;
 }
 
 .back > div {

@@ -2,7 +2,7 @@
 
 .mondrian-grid {
   display: inline-grid;
-  grid-template-columns: repeat(11, calc((100vh - 100px) / 17));
+  grid-template-columns: repeat(11, calc((100vh - 350px) / 17));
   grid-template-rows: repeat(14, calc((100vh - 100px) / 15));
   padding: 0.6vh;
   gap: 0.6vh;

@@ -5,6 +5,7 @@ import camera from "./images/camera.png";
 import alarm from "./images/alarm.png";
 import green_checkmark from "./images/green_checkmark.svg";
 import red_x from "./images/red_x.svg";
+import { useRef } from "react";
 
 function EndScreen({ checkboxStates, timeRemaining }) {
   return (
@@ -116,13 +117,23 @@ function EndScreen({ checkboxStates, timeRemaining }) {
 }
 
 export function WinScreen({ timeRemaining }) {
+  const winAudioRef = useRef(null);
+
   return (
     <>
       <EndScreen
         timeRemaining={timeRemaining}
         checkboxStates={[true, true, true]}
       ></EndScreen>
-      <ReactAudioPlayer src="disable_alarm_sfx.mp3" autoPlay />
+      <ReactAudioPlayer
+        src="disable_alarm_sfx.mp3"
+        autoPlay
+        on
+        onEnded={() => {
+          winAudioRef.current?.audioEl.current.play();
+        }}
+      />
+      <ReactAudioPlayer ref={winAudioRef} src="win.mp3" loop />
     </>
   );
 }
@@ -131,7 +142,7 @@ export function LoseScreen({ checkboxStates }) {
   return (
     <>
       <EndScreen checkboxStates={checkboxStates}></EndScreen>
-      <ReactAudioPlayer src="lose.mp3" autoPlay />
+      <ReactAudioPlayer src="lose.mp3" autoPlay loop />
     </>
   );
 }

@@ -93,7 +93,7 @@ export default function TimerContents(props) {
         >
           {/* step 1 checkbox */}
           {checkboxStates[0] ? (
-            <img class="grid-checkmark" src={checkmark} alt="Checkmark" />
+            <img className="grid-checkmark" src={checkmark} alt="Checkmark" />
           ) : null}
         </div>
         <div
@@ -110,7 +110,7 @@ export default function TimerContents(props) {
         >
           {/* step 2 checkbox */}
           {checkboxStates[1] ? (
-            <img class="grid-checkmark" src={checkmark} alt="Checkmark" />
+            <img className="grid-checkmark" src={checkmark} alt="Checkmark" />
           ) : null}
         </div>
         <div
@@ -127,7 +127,7 @@ export default function TimerContents(props) {
         >
           {/* step 3 checkbox */}
           {checkboxStates[2] ? (
-            <img class="grid-checkmark" src={checkmark} alt="Checkmark" />
+            <img className="grid-checkmark" src={checkmark} alt="Checkmark" />
           ) : null}
         </div>
         <div

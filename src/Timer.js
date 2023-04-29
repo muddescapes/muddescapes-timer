@@ -20,7 +20,6 @@ function formatSecs(secs) {
 function Timer({ db }) {
   // ref for audio player to play sound when settings popup opens
   // cannot autoplay due to browser restrictions (must interact first)
-  const bgAudioRef = React.useRef();
   const step1AudioRef = React.useRef();
   const step2AudioRef = React.useRef();
 
@@ -33,8 +32,6 @@ function Timer({ db }) {
 
   function handleSettingsPopup() {
     setSettingsPopup(!settingsPopup);
-    // start playing background music
-    bgAudioRef.current?.audioEl.current.play();
   }
 
   const [timer, loading, error] = useDocumentData(
@@ -116,13 +113,6 @@ function Timer({ db }) {
 
   var content = (
     <>
-      <ReactAudioPlayer
-        src="bg.mp3"
-        loop
-        ref={(e) => {
-          bgAudioRef.current = e;
-        }}
-      />
       <ReactAudioPlayer
         src="security_cameras_disabled_sfx.mp3"
         ref={(e) => {

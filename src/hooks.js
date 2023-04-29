@@ -16,6 +16,14 @@ export const CHECKBOXES = [
   },
 ];
 
+function inIframe() {
+  let ans = true;
+  try {
+    ans = window.self !== window.top;
+  } catch (e) {}
+  return ans;
+}
+
 export function useCheckboxStates({ onWin, onTaskComplete }) {
   let [checkboxStates, setCheckboxStates] = useState(
     CHECKBOXES.map(() => false)
@@ -25,7 +33,13 @@ export function useCheckboxStates({ onWin, onTaskComplete }) {
   // call callbacks in a separate useEffect to avoid MQTT reconnects
   // every time the arguments are updated
   useEffect(() => {
-    if (checkboxStates.every((c) => c)) {
+    // TODO: Hacky solution alert!
+    // only set win when outside of iframe to get around some clients mistakenly
+    // setting win every second
+    // since multiple windows may be open in an iframe due to the control center,
+    // but only one window is open outside of the iframe (in the room), this
+    // should make only one window set win
+    if (!inIframe() && checkboxStates.every((c) => c)) {
       onWin();
     }
 

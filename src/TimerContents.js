@@ -85,14 +85,16 @@ export default function TimerContents(props) {
           style={{ gridArea: "1 / 2 / 5 / 12" }}
         >
           {/* timer text */}
-          {formattedTime}
+          <p>{formattedTime}</p>
         </div>
         <div
           className="mondrian-grid__white"
           style={{ gridArea: "6 / 2 / 7 / 3" }}
         >
           {/* step 1 checkbox */}
-          {checkboxStates[0] ? <img src={checkmark} alt="Checkmark" /> : null}
+          {checkboxStates[0] ? (
+            <img class="grid-checkmark" src={checkmark} alt="Checkmark" />
+          ) : null}
         </div>
         <div
           className="mondrian-grid__white step-title"
@@ -100,14 +102,16 @@ export default function TimerContents(props) {
           style={{ gridArea: "6 / 3 / 8 / 11" }}
         >
           {/* step 1 text */}
-          {CHECKBOXES[0].name}
+          <span>{CHECKBOXES[0].name}</span>
         </div>
         <div
           className="mondrian-grid__white"
           style={{ gridArea: "9 / 2 / 10 / 3" }}
         >
           {/* step 2 checkbox */}
-          {checkboxStates[1] ? <img src={checkmark} alt="Checkmark" /> : null}
+          {checkboxStates[1] ? (
+            <img class="grid-checkmark" src={checkmark} alt="Checkmark" />
+          ) : null}
         </div>
         <div
           className="mondrian-grid__white step-title"
@@ -115,14 +119,16 @@ export default function TimerContents(props) {
           style={{ gridArea: "9 / 3 / 11 / 11" }}
         >
           {/* step 2 text */}
-          {CHECKBOXES[1].name}
+          <span>{CHECKBOXES[1].name}</span>
         </div>
         <div
           className="mondrian-grid__white"
           style={{ gridArea: "12 / 2 / 13 / 3" }}
         >
           {/* step 3 checkbox */}
-          {checkboxStates[2] ? <img src={checkmark} alt="Checkmark" /> : null}
+          {checkboxStates[2] ? (
+            <img class="grid-checkmark" src={checkmark} alt="Checkmark" />
+          ) : null}
         </div>
         <div
           className="mondrian-grid__white step-title"
@@ -130,7 +136,7 @@ export default function TimerContents(props) {
           style={{ gridArea: "12 / 3 / 13 / 11" }}
         >
           {/* step 3 text */}
-          {!checkboxStates[1] ? "???" : CHECKBOXES[2].name}
+          <span>{!checkboxStates[1] ? "???" : CHECKBOXES[2].name}</span>
         </div>
       </div>
     </div>

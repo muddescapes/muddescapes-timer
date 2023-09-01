@@ -6,7 +6,6 @@ import SettingsPopup from "./SettingsPopup";
 import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
-import { useCheckboxStates } from "./hooks";
 
 const TIMER_SECS = 3599; // 59:59 so we never need to show the hours
 const FIREBASE_COLLECTION = "timers";
@@ -20,8 +19,7 @@ function formatSecs(secs) {
 function Timer({ db }) {
   // ref for audio player to play sound when settings popup opens
   // cannot autoplay due to browser restrictions (must interact first)
-  const step1AudioRef = React.useRef();
-  const step2AudioRef = React.useRef();
+  const bgAudioRef = React.useRef();
 
   // current time in seconds since the epoch
   const [currTime, setCurrTime] = useState(
@@ -31,6 +29,10 @@ function Timer({ db }) {
   const [settingsPopup, setSettingsPopup] = useState(false);
 
   function handleSettingsPopup() {
+    // start playing background music
+    if (bgAudioRef.current) {
+      bgAudioRef.current.audioEl.current.play();
+    }
     setSettingsPopup(!settingsPopup);
   }
 
@@ -77,19 +79,7 @@ function Timer({ db }) {
     });
   };
 
-  const [checkboxStates, resetCheckboxStates] = useCheckboxStates({
-    onWin,
-    onTaskComplete: (i) => {
-      if (i === 0) {
-        step1AudioRef.current?.audioEl.current.play();
-      } else if (i === 1) {
-        step2AudioRef.current?.audioEl.current.play();
-      }
-    },
-  });
-
   const onReset = () => {
-    resetCheckboxStates();
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
@@ -114,29 +104,21 @@ function Timer({ db }) {
   var content = (
     <>
       <ReactAudioPlayer
-        src="security_cameras_disabled_sfx.mp3"
+        src="bg.mp3"
+        loop
         ref={(e) => {
-          step1AudioRef.current = e;
+          bgAudioRef.current = e;
         }}
       />
-      <ReactAudioPlayer
-        src="hammer_stolen_sfx.mp3"
-        ref={(e) => {
-          step2AudioRef.current = e;
-        }}
-      />
-      <TimerContents
-        checkboxStates={checkboxStates}
-        formattedTime={loading ? "loading" : formattedTime}
-      />
+      <TimerContents formattedTime={loading ? "loading" : formattedTime} />
     </>
   );
   if (timer?.win) {
     content = (
-      <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
+      <WinScreen finishedIn={formatSecs(TIMER_SECS - getRemainingSecs())} />
     );
   } else if (getRemainingSecs() === 0) {
-    content = <LoseScreen checkboxStates={checkboxStates} />;
+    content = <LoseScreen />;
   }
 
   return (

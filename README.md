@@ -33,7 +33,7 @@ The settings page that pops up when you click on the timer. The actual definitio
 The end screens, (lose screen, winscreen) are defined here. This is where the credits go. The logic for which screen to display and when is in Timer.js
 
 ### TimerContents.js
-The component that actually displays the timer. It is responsible for rendering the actual text that displays the time remaining and the checkboxes for the tasks to complete.
+The component that actually displays the timer. It is responsible for rendering the actual text that displays the time remaining.
 
 ### Other resources
 Music/sound effects are in `public`.

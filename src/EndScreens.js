@@ -9,8 +9,9 @@ export function WinScreen({ finishedIn }) {
   return (
     <>
       <EndScreen>
-        <p>Congratulations!</p>
-        <p>You escaped in {finishedIn}</p>
+        <video height="100%" autoPlay loop>
+          <source src="credits.mp4" type="video/mp4"></source>
+        </video>
       </EndScreen>
       <ReactAudioPlayer src="win.mp3" autoPlay loop />
     </>

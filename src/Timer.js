@@ -7,7 +7,7 @@ import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
 
-const TIMER_SECS = 3599; // 59:59 so we never need to show the hours
+const TIMER_SECS = 99999999; // 59:59 so we never need to show the hours
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 
@@ -42,6 +42,13 @@ function Timer({ db }) {
   if (error) {
     console.error(error);
   }
+
+  const getVideoStarted = () => {
+    if (timer) {
+      return timer.startTime;
+    }
+    return -1;
+  };
 
   const getRemainingSecs = () => {
     if (timer) {
@@ -96,11 +103,6 @@ function Timer({ db }) {
     return () => clearInterval(interval);
   }, []);
 
-  var formattedTime = null;
-  if (timer) {
-    formattedTime = formatSecs(getRemainingSecs());
-  }
-
   var content = (
     <>
       <ReactAudioPlayer
@@ -110,9 +112,10 @@ function Timer({ db }) {
           bgAudioRef.current = e;
         }}
       />
-      <TimerContents formattedTime={loading ? "loading" : formattedTime} />
+      <TimerContents loading={loading} videoStarted={getVideoStarted()} />
     </>
   );
+
   if (timer?.win) {
     content = (
       <WinScreen finishedIn={formatSecs(TIMER_SECS - getRemainingSecs())} />

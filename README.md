@@ -1,5 +1,7 @@
 # Asynchronously Resettable Timer for MuddEscapes
 
+View the timer here: https://muddescapes-timer.web.app/
+
 (message from Anan) I'm not sure how clear this readme is. If you have any questions feel free to just message me.
 
 ## How the website works

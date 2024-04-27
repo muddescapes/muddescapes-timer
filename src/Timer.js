@@ -7,13 +7,19 @@ import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
 
-const TIMER_SECS = 99999999; // 59:59 so we never need to show the hours
+const TIMER_SECS = 2100; // 35:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 
-function formatSecs(secs) {
-  // format time in MM:SS
-  return new Date(secs * 1000).toISOString().substring(14, 19);
+function formatMsecs(msecs) {
+  // format time in MM:SS:ms
+  const secs = Math.floor(msecs / 1000);
+  const mins = Math.floor(secs / 60);
+  const remainingSecs = secs % 60;
+  const remainingMsecs = msecs % 1000;
+  return `${mins}:${remainingSecs.toString().padStart(2, "0")}:${remainingMsecs
+    .toString()
+    .padStart(3, "0")}`;
 }
 
 function Timer({ db }) {
@@ -21,9 +27,9 @@ function Timer({ db }) {
   // cannot autoplay due to browser restrictions (must interact first)
   const bgAudioRef = React.useRef();
 
-  // current time in seconds since the epoch
+  // current time in milliseconds since the epoch
   const [currTime, setCurrTime] = useState(
-    Math.floor(new Date().getTime() / 1000)
+    Math.floor(new Date().getTime())
   );
   // Create List Confirmation
   const [settingsPopup, setSettingsPopup] = useState(false);
@@ -43,20 +49,13 @@ function Timer({ db }) {
     console.error(error);
   }
 
-  const getVideoStarted = () => {
-    if (timer) {
-      return timer.startTime;
-    }
-    return -1;
-  };
-
-  const getRemainingSecs = () => {
+  const getRemainingMsecs = () => {
     if (timer) {
       return timer.startTime
-        ? Math.max(timer.secs - (currTime - timer.startTime), 0)
-        : timer.secs;
+        ? Math.max((timer.secs * 1000) - (currTime - timer.startTime), 0)
+        : timer.secs * 1000;
     }
-    return -1;
+    return 1;
   };
 
   const onStart = () => {
@@ -68,7 +67,7 @@ function Timer({ db }) {
   // timer pauses when startTime is null
   const onPause = () => {
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: getRemainingSecs(),
+      secs: getRemainingMsecs() / 1000,
       startTime: null,
     });
   };
@@ -80,7 +79,7 @@ function Timer({ db }) {
     }
 
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: getRemainingSecs(),
+      secs: getRemainingMsecs() / 1000,
       startTime: null,
       win: true,
     });
@@ -98,10 +97,16 @@ function Timer({ db }) {
     // shouldn't cause any re-renders if currTime is not changed,
     // so updating every 100ms should be fine
     const interval = setInterval(() => {
-      setCurrTime(Math.floor(new Date().getTime() / 1000));
-    }, 100);
+      setCurrTime(Math.floor(new Date().getTime()));
+    }, 37);
     return () => clearInterval(interval);
   }, []);
+
+  var formattedTime = null;
+  if (timer) {
+    // timer is counting up
+    formattedTime = formatMsecs(timer.secs * 1000 - getRemainingMsecs());
+  }
 
   var content = (
     <>
@@ -112,15 +117,15 @@ function Timer({ db }) {
           bgAudioRef.current = e;
         }}
       />
-      <TimerContents loading={loading} videoStarted={getVideoStarted()} />
+      <TimerContents loading={loading} formattedTime={formattedTime} />
     </>
   );
 
   if (timer?.win) {
     content = (
-      <WinScreen finishedIn={formatSecs(TIMER_SECS - getRemainingSecs())} />
+      <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
-  } else if (getRemainingSecs() === 0) {
+  } else if (getRemainingMsecs() <= 0) {
     content = <LoseScreen />;
   }
 

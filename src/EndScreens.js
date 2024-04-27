@@ -9,9 +9,7 @@ export function WinScreen({ finishedIn }) {
   return (
     <>
       <EndScreen>
-        <video height="100%" autoPlay loop>
-          <source src="credits.mp4" type="video/mp4"></source>
-        </video>
+        <p>You win!</p>
       </EndScreen>
       <ReactAudioPlayer src="win.mp3" autoPlay loop />
     </>
@@ -22,9 +20,9 @@ export function LoseScreen() {
   return (
     <>
       <EndScreen>
-        <p>You Lose!</p>
+        <p>Fibian's here!</p>
       </EndScreen>
-      <ReactAudioPlayer src="lose.mp3" autoPlay loop />
+      <ReactAudioPlayer src="lose.mp3" autoPlay />
     </>
   );
 }

@@ -1,8 +1,6 @@
 .timer-contents {
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 48px;
@@ -12,7 +10,8 @@
 
 #timer-time {
   position: absolute;
-  bottom: 12%;
-  left: 8%;
+  bottom: 50%;
+  left: 80%;
   font-family: 'Courier New', Courier, monospace;
+  color: white;
 }

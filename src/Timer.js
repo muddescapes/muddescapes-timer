@@ -12,14 +12,11 @@ const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 
 function formatMsecs(msecs) {
-  // format time in MM:SS:ms
+  // format time in MM:SS
   const secs = Math.floor(msecs / 1000);
   const mins = Math.floor(secs / 60);
   const remainingSecs = secs % 60;
-  const remainingMsecs = msecs % 1000;
-  return `${mins}:${remainingSecs.toString().padStart(2, "0")}:${remainingMsecs
-    .toString()
-    .padStart(3, "0")}`;
+  return `${mins}:${remainingSecs.toString().padStart(2, "0")}`;
 }
 
 function Timer({ db }) {
@@ -105,7 +102,7 @@ function Timer({ db }) {
   var formattedTime = null;
   if (timer) {
     // timer is counting up
-    formattedTime = formatMsecs(timer.secs * 1000 - getRemainingMsecs());
+    formattedTime = formatMsecs(getRemainingMsecs());
   }
 
   var content = (

@@ -1,28 +1,42 @@
 import "./EndScreens.css";
 import ReactAudioPlayer from "react-audio-player";
 
-function EndScreen({ children }) {
-  return <div className="end-screen">{children}</div>;
-}
+// function EndScreen({ children }) {
+//   return <div className="end-screen">{children}</div>;
+// }
 
 export function WinScreen({ finishedIn }) {
   return (
-    <>
-      <EndScreen>
-        <p>You win!</p>
-      </EndScreen>
-      <ReactAudioPlayer src="win.mp3" autoPlay loop />
-    </>
+    <div className="end-screen" style={{ pointerEvents: "none"}}>
+      <div style={{position: "absolute"}}>
+        <video
+          width="120%"
+          height="120%"
+          src="win_video.mp4"
+          autoPlay
+          muted
+          loop
+        ></video>
+      </div>
+      <ReactAudioPlayer src="win.mp3" autoPlay />
+    </div>
   );
 }
 
 export function LoseScreen() {
   return (
-    <>
-      <EndScreen>
-        <p>Fibian's here!</p>
-      </EndScreen>
+    <div className="end-screen" style={{ pointerEvents: "none"}}>
+      <div style={{position: "absolute"}}>
+        <video
+          width="120%"
+          height="120%"
+          src="lose_video.mp4"
+          autoPlay
+          muted
+          loop
+        ></video>
+      </div>
       <ReactAudioPlayer src="lose.mp3" autoPlay />
-    </>
+    </div>
   );
 }

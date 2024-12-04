@@ -7,7 +7,7 @@ import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
 
-const TIMER_SECS = 2100; // 35:00
+const TIMER_SECS = 2700; // 35:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 

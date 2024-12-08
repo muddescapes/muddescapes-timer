@@ -10,8 +10,8 @@ export function WinScreen({ finishedIn }) {
     <div className="end-screen" style={{ pointerEvents: "none"}}>
       <div style={{position: "absolute"}}>
         <video
-          width="120%"
-          height="120%"
+          width="66%"
+          height="66%"
           src="win_video.mp4"
           autoPlay
           muted
@@ -28,8 +28,8 @@ export function LoseScreen() {
     <div className="end-screen" style={{ pointerEvents: "none"}}>
       <div style={{position: "absolute"}}>
         <video
-          width="120%"
-          height="120%"
+          width="66%"
+          height="66%"
           src="lose_video.mp4"
           autoPlay
           muted

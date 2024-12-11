@@ -12,7 +12,7 @@ export default function TimerContents({ loading, formattedTime }) {
         <video
           width="102%"
           height="102%"
-          src="bg_video.mp4"
+          src="https://muddescapes.kev3u.com/bg_video.mp4"
           autoPlay
           muted
           loop

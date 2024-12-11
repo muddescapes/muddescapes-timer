@@ -12,13 +12,13 @@ export function WinScreen({ finishedIn }) {
         <video
           width="68%"
           height="68%"
-          src="win_video.mp4"
+          src="https://muddescapes.kev3u.com/win_video.mp4"
           autoPlay
           muted
           loop
         ></video>
       </div>
-      <ReactAudioPlayer src="win.mp3" autoPlay />
+      <ReactAudioPlayer src="https://muddescapes.kev3u.com/win.mp3" autoPlay />
     </div>
   );
 }
@@ -30,13 +30,13 @@ export function LoseScreen() {
         <video
           width="68%"
           height="68%"
-          src="lose_video.mp4"
+          src="https://muddescapes.kev3u.com/lose_video.mp4"
           autoPlay
           muted
           loop
         ></video>
       </div>
-      <ReactAudioPlayer src="lose.mp3" autoPlay />
+      <ReactAudioPlayer src="https://muddescapes.kev3u.com/lose.mp3" autoPlay />
     </div>
   );
 }

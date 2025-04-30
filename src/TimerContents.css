@@ -1,18 +1,67 @@
-.timer-contents {
-  width: 100vw;
-  height: 100vh;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  background-color: black;
-  color: white;
+/* 22.625 to 31.625 */
+
+.mondrian-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(14, 1fr);
+  height: 90vh;
+  width: min(64.3873517793vh, 95vw);
+  padding: 0.6vh;
+  gap: 0.6vh;
+  background-color: #231f20;
 }
 
-#timer-time {
-  position: absolute;
-  bottom: 28%;
-  left: 30%;
-  font-family: papyrus, sans-serif;
-  font-size: 144px;
-  color: white;
+.mondrian-grid__blue {
+  background-color: #344da0;
+}
+
+.mondrian-grid__red {
+  background-color: #e20e1e;
+}
+
+.mondrian-grid__yellow {
+  background-color: #ffce00;
+}
+
+.mondrian-grid__white {
+  background-color: #ffffff;
+}
+
+.timer {
+  padding: 1vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  container-type: size;
+}
+
+.timer > p {
+  font-size: 30cqw;
+}
+
+.step-title {
+  padding: 1vh;
+  display: flex;
+  align-items: center;
+  container-type: size;
+}
+
+.step-title > span {
+  font-size: 8cqw;
+}
+
+.step-title[data-completed="true"] {
+  text-decoration: line-through;
+  color: #898989;
+}
+
+.checkbox {
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}
+
+.grid-checkmark {
+  height: 100%;
+  width: 100%;
 }

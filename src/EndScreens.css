@@ -1,9 +1,187 @@
-.end-screen {
+.end-screen-wrapper {
   width: 100vw;
   height: 100vh;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 72px;
-  background-color: black;
-  color: white
+}
+
+@property --camera-distance {
+  syntax: "<length>";
+  initial-value: 0cm;
+}
+
+@keyframes zoomInOut {
+  0% {
+    translate: 0cm 0cm 0cm;
+  }
+  50% {
+    translate: 0cm 0cm var(--camera-distance);
+  }
+  100% {
+    translate: 0cm 0cm 0cm;
+  }
+}
+
+@keyframes zoomInOutBack {
+  0% {
+    translate: 0cm 0cm calc(-1 * var(--wall-length));
+  }
+  50% {
+    translate: 0cm 0cm calc(var(--camera-distance) - var(--wall-length));
+  }
+  100% {
+    translate: 0cm 0cm calc(-1 * var(--wall-length));
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(2cm);
+  }
+  50% {
+    transform: translateY(-2cm);
+  }
+  100% {
+    transform: translateY(2cm);
+  }
+}
+
+.end-screen {
+  --wall-length: 40cm;
+  --inner-border: 40px solid #231f20;
+  --camera-distance: 18cm;
+  width: calc(11 * (((100vh - 100px) / 17)) + 10 * 0.6vh);
+  height: calc(14 * (((100vh - 100px) / 15)) + 13 * 0.6vh);
+  border: 0.6vh solid #231f20;
+  perspective: 300px;
+  overflow: hidden;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  color: white;
+  background-color: #00800085;
+  text-align: center;
+  padding-bottom: 1vh;
+}
+
+.header > * {
+  margin: 0;
+}
+
+.wall {
+  box-sizing: border-box;
+  position: absolute;
+  /* border: 0.6vh solid 231f20; */
+  animation: zoomInOut cubic-bezier(0.98, 0, 0.16, 1.02) 30s infinite;
+  background-color: #404040;
+  color: white;
+  /* cover up the minuscule gap between the walls and the floor */
+  outline: 1px solid #404040;
+}
+
+.wall h4,
+.wall p {
+  margin: 0;
+}
+
+.wall h4 {
+  text-decoration: underline;
+}
+
+.text-wall {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-content: center;
+  font-size: 5vh;
+  padding: 3vh;
+}
+
+.left-wall {
+  width: var(--wall-length);
+  height: 100%;
+  transform-origin: center left;
+  transform: rotateY(90deg);
+  border-right: var(--inner-border);
+  border-left: none;
+}
+
+.right-wall {
+  right: 0;
+  width: var(--wall-length);
+  height: 100%;
+  transform-origin: center right;
+  transform: rotateY(-90deg);
+  border-left: var(--inner-border);
+  border-right: none;
+}
+
+.ceiling {
+  width: 100%;
+  height: var(--wall-length);
+  transform-origin: top center;
+  transform: rotateX(-90deg);
+  border: none;
+  border-bottom: var(--inner-border);
+  background-color: #505050;
+}
+
+.floor {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: var(--wall-length);
+  transform-origin: bottom center;
+  transform: rotateX(90deg);
+  border: none;
+  border-top: var(--inner-border);
+  background-color: #303030;
+
+  display: flex;
+  justify-content: center;
+}
+
+.carpet {
+  width: 50%;
+  height: 100%;
+  background-color: maroon;
+  border-left: 10px solid gold;
+  border-right: 10px solid gold;
+}
+
+.back {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  animation: zoomInOutBack cubic-bezier(0.98, 0, 0.16, 1.02) 30s infinite;
+  height: 100%;
+  background-image: url("images/timer_back_wall.png");
+  background-size: 100% 100%;
+}
+
+.back > div {
+  width: 25%;
+  object-fit: contain;
+  gap: 4vh;
+  display: flex;
+  justify-content: center;
+}
+
+.back > div > img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.task-success {
+  filter: drop-shadow(0 0 15px green);
+}
+
+.task-failure {
+  filter: drop-shadow(0 0 15px red);
 }

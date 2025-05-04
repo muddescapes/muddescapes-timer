@@ -4,7 +4,7 @@ import mqtt from "mqtt";
 export const CHECKBOXES = [
   {
     topic: "muddescapes/data/Laser Casting/Current state of Laser Casting",
-    name: "Disable the security cameras",
+    name: "Win Condition",
   },
 ];
 
@@ -16,7 +16,7 @@ function inIframe() {
   return ans;
 }
 
-export function useCheckboxStates({ onWin, onTaskComplete }) {
+export function useCheckboxStates({ onWin }) {
   let [checkboxStates, setCheckboxStates] = useState(
     CHECKBOXES.map(() => false)
   );
@@ -31,18 +31,11 @@ export function useCheckboxStates({ onWin, onTaskComplete }) {
     // since multiple windows may be open in an iframe due to the control center,
     // but only one window is open outside of the iframe (in the room), this
     // should make only one window set win
+
     if (!inIframe() && checkboxStates.every((c) => c)) {
       onWin();
     }
-
-    const prevState = prevStateRef.current;
-    for (let i = 0; i < checkboxStates.length; i++) {
-      if (checkboxStates[i] && !prevState[i]) {
-        onTaskComplete(i);
-      }
-    }
-    prevStateRef.current = [...checkboxStates];
-  }, [checkboxStates, onWin, onTaskComplete]);
+  }, [checkboxStates, onWin]);
 
   useEffect(() => {
     const client = mqtt.connect("wss://broker.hivemq.com:8884", {

@@ -11,7 +11,7 @@ import {useCheckboxStates} from "./hooks";
 const INTRO_DELAY = 29000;
 const WIN_DELAY = 18000;
 const LOSE_DELAY = 17000;
-const TIMER_SECS = 5; // 2700 = 45:00
+const TIMER_SECS = 3; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
 var has_lost = false;
@@ -88,29 +88,37 @@ function Timer({ db }) {
       return;
     }
 
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: getRemainingMsecs() / 1000,
-      startTime: null,
-    });
-
-    new Audio("winaudio.mp3").play();
+    // updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+    //   secs: getRemainingMsecs() / 1000,
+    //   startTime: null,
+    // });
 
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        credits: true
+      });
+    }, WIN_DELAY);
+
+    new Audio("winaudio.mp3").play();
+
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
         secs: getRemainingMsecs() / 1000,
         startTime: null,
         win: true,
-      });
-    }, WIN_DELAY);
+    });
   };
 
   const [checkboxStates, resetCheckboxStates] = useCheckboxStates({onWin});
 
   const onReset = () => {
+    has_lost = false;
+
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
       win: false,
+      credits: false,
+      losecredits: false,
     });
   };
 
@@ -129,6 +137,8 @@ function Timer({ db }) {
     formattedTime = formatMsecs(getRemainingMsecs());
   }
 
+  console.log("timer screen");
+
   var content = (
     <>
       <ReactAudioPlayer
@@ -143,16 +153,26 @@ function Timer({ db }) {
     </>
   );
 
-  if (timer?.win) {
+  if (timer?.credits) {
+    console.log("win");
     content = (
       <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
-  } else if (getRemainingMsecs() <= 0) {
+  } else if (getRemainingMsecs() <= 0 && !has_lost) {
+    has_lost = true;
     new Audio("loseaudio.mp3").play();
 
     setTimeout(function() {
-      content = <LoseScreen />
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        losecredits: true
+      });
     }, LOSE_DELAY);
+  }
+
+  if (timer?.losecredits) {
+    content = (
+      <LoseScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
+    );
   }
 
   return (

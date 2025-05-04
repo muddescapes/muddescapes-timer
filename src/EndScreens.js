@@ -5,7 +5,7 @@ import ReactAudioPlayer from "react-audio-player";
 //   return <div className="end-screen">{children}</div>;
 // }
 
-export function WinScreen({ finishedIn }) {
+export function WinScreen() {
   return (
     <div className="end-screen" style={{ pointerEvents: "none"}}>
       <div style={{position: "absolute"}}>

@@ -3,16 +3,8 @@ import mqtt from "mqtt";
 
 export const CHECKBOXES = [
   {
-    topic: "muddescapes/data/Security Cameras/disabled",
+    topic: "muddescapes/data/Laser Casting/Current state of Laser Casting",
     name: "Disable the security cameras",
-  },
-  {
-    topic: "muddescapes/data/Final Pedestal/Hammer Stolen",
-    name: "Steal the most precious artifact",
-  },
-  {
-    topic: "muddescapes/data/Fingerprint Sensor/Alarm Disarmed",
-    name: "Disarm the alarm",
   },
 ];
 

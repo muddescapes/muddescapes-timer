@@ -6,31 +6,41 @@ import SettingsPopup from "./SettingsPopup";
 import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
-import { useCheckboxStates } from "./hooks";
+import {useCheckboxStates} from "./hooks";
 
-const TIMER_SECS = 3599; // 59:59 so we never need to show the hours
+const INTRO_DELAY = 29000;
+const WIN_DELAY = 18000;
+const LOSE_DELAY = 17000;
+const TIMER_SECS = 5; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
+var has_lost = false;
 
-function formatSecs(secs) {
+function formatMsecs(msecs) {
   // format time in MM:SS
-  return new Date(secs * 1000).toISOString().substring(14, 19);
+  const secs = Math.floor(msecs / 1000);
+  const mins = Math.floor(secs / 60);
+  const remainingSecs = secs % 60;
+  return `${mins}:${remainingSecs.toString().padStart(2, "0")}`;
 }
 
 function Timer({ db }) {
   // ref for audio player to play sound when settings popup opens
   // cannot autoplay due to browser restrictions (must interact first)
-  const step1AudioRef = React.useRef();
-  const step2AudioRef = React.useRef();
+  var bgAudioRef = React.useRef();
 
-  // current time in seconds since the epoch
+  // current time in milliseconds since the epoch
   const [currTime, setCurrTime] = useState(
-    Math.floor(new Date().getTime() / 1000)
+    Math.floor(new Date().getTime())
   );
   // Create List Confirmation
   const [settingsPopup, setSettingsPopup] = useState(false);
 
   function handleSettingsPopup() {
+    // start playing background music
+    if (bgAudioRef.current) {
+      bgAudioRef.current.audioEl.current.play();
+    }
     setSettingsPopup(!settingsPopup);
   }
 
@@ -41,25 +51,33 @@ function Timer({ db }) {
     console.error(error);
   }
 
-  const getRemainingSecs = () => {
+  const getRemainingMsecs = () => {
     if (timer) {
       return timer.startTime
-        ? Math.max(timer.secs - (currTime - timer.startTime), 0)
-        : timer.secs;
+        ? Math.max((timer.secs * 1000) - (currTime - timer.startTime), 0)
+        : timer.secs * 1000;
     }
-    return -1;
+    return 1;
   };
 
   const onStart = () => {
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      startTime: currTime,
-    });
+    new Audio("introtwist.mp3").play();
+
+    content = (
+      <TimerContents loading={loading} formattedTime={formattedTime} />
+    );
+
+    setTimeout(function() {
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        startTime: currTime + INTRO_DELAY,
+      });
+    }, INTRO_DELAY);
   };
 
   // timer pauses when startTime is null
   const onPause = () => {
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: getRemainingSecs(),
+      secs: getRemainingMsecs() / 1000,
       startTime: null,
     });
   };
@@ -71,25 +89,24 @@ function Timer({ db }) {
     }
 
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: getRemainingSecs(),
+      secs: getRemainingMsecs() / 1000,
       startTime: null,
-      win: true,
     });
+
+    new Audio("winaudio.mp3").play();
+
+    setTimeout(function() {
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        secs: getRemainingMsecs() / 1000,
+        startTime: null,
+        win: true,
+      });
+    }, WIN_DELAY);
   };
 
-  const [checkboxStates, resetCheckboxStates] = useCheckboxStates({
-    onWin,
-    onTaskComplete: (i) => {
-      if (i === 0) {
-        step1AudioRef.current?.audioEl.current.play();
-      } else if (i === 1) {
-        step2AudioRef.current?.audioEl.current.play();
-      }
-    },
-  });
+  const [checkboxStates, resetCheckboxStates] = useCheckboxStates({onWin});
 
   const onReset = () => {
-    resetCheckboxStates();
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
@@ -101,42 +118,41 @@ function Timer({ db }) {
     // shouldn't cause any re-renders if currTime is not changed,
     // so updating every 100ms should be fine
     const interval = setInterval(() => {
-      setCurrTime(Math.floor(new Date().getTime() / 1000));
-    }, 100);
+      setCurrTime(Math.floor(new Date().getTime()));
+    }, 37);
     return () => clearInterval(interval);
   }, []);
 
   var formattedTime = null;
   if (timer) {
-    formattedTime = formatSecs(getRemainingSecs());
+    // timer is counting up
+    formattedTime = formatMsecs(getRemainingMsecs());
   }
 
   var content = (
     <>
       <ReactAudioPlayer
-        src="security_cameras_disabled_sfx.mp3"
+        src="bg.mp3"
+        volume = {0.1}
+        loop
         ref={(e) => {
-          step1AudioRef.current = e;
+          bgAudioRef.current = e;
         }}
       />
-      <ReactAudioPlayer
-        src="hammer_stolen_sfx.mp3"
-        ref={(e) => {
-          step2AudioRef.current = e;
-        }}
-      />
-      <TimerContents
-        checkboxStates={checkboxStates}
-        formattedTime={loading ? "loading" : formattedTime}
-      />
+      <TimerContents loading={loading} formattedTime={formattedTime} />
     </>
   );
+
   if (timer?.win) {
     content = (
-      <WinScreen timeRemaining={formatSecs(TIMER_SECS - getRemainingSecs())} />
+      <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
-  } else if (getRemainingSecs() === 0) {
-    content = <LoseScreen checkboxStates={checkboxStates} />;
+  } else if (getRemainingMsecs() <= 0) {
+    new Audio("loseaudio.mp3").play();
+
+    setTimeout(function() {
+      content = <LoseScreen />
+    }, LOSE_DELAY);
   }
 
   return (

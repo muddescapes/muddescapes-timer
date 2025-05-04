@@ -6,7 +6,6 @@ import SettingsPopup from "./SettingsPopup";
 import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
-import {useCheckboxStates} from "./hooks";
 
 const INTRO_DELAY = 29000;
 const WIN_DELAY = 18000;
@@ -107,8 +106,6 @@ function Timer({ db }) {
         win: true,
     });
   };
-
-  const [checkboxStates, resetCheckboxStates] = useCheckboxStates({onWin});
 
   const onReset = () => {
     has_lost = false;

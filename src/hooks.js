@@ -20,7 +20,6 @@ export function useCheckboxStates({ onWin }) {
   let [checkboxStates, setCheckboxStates] = useState(
     CHECKBOXES.map(() => false)
   );
-  const prevStateRef = useRef(checkboxStates);
 
   // call callbacks in a separate useEffect to avoid MQTT reconnects
   // every time the arguments are updated

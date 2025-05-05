@@ -10,9 +10,9 @@
 
 #timer-time {
   position: absolute;
-  bottom: 28%;
-  left: 30%;
-  font-family: papyrus, sans-serif;
-  font-size: 144px;
+  bottom: 21%;
+  left: 27%;
+  font-family: papyrus, Times, "Times New Roman", sans-serif;
+  font-size: 288px;
   color: white;
 }

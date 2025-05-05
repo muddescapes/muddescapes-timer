@@ -13,9 +13,6 @@ const LOSE_DELAY = 17000;
 const TIMER_SECS = 2700; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
-var played_lose = false;
-var played_win = false;
-var played_intro = false;
 
 function formatMsecs(msecs) {
   // format time in MM:SS
@@ -100,7 +97,8 @@ function Timer({ db }) {
 
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-        wincredits: true
+        wincredits: true,
+        win: false
       });
     }, WIN_DELAY);
   };
@@ -153,30 +151,10 @@ function Timer({ db }) {
 
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-        losecredits: true
+        losecredits: true,
+        lose: false
       });
     }, LOSE_DELAY);
-  }
-
-  if (!timer?.lose) {
-    played_lose = false;
-  }
-  if (!timer?.win) {
-    played_win = false;
-  }
-  if (!timer?.intro) {
-    played_intro = false;
-  }
-
-  if (timer?.win && !played_win) {
-    new Audio("winaudio.mp3").play();
-    played_win = true;
-  } else if (timer?.lose && !played_lose) {
-    new Audio("loseaudio.mp3").play();
-    played_lose = true;
-  } else if (timer?.intro && !played_intro) {
-    new Audio("introtwist.mp3").play();
-    played_intro = true;
   }
 
   if (timer?.losecredits) {
@@ -187,6 +165,45 @@ function Timer({ db }) {
     content = (
       <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
+  } else if (timer?.intro) {
+    content = (
+      <>
+        <ReactAudioPlayer
+          src="introtwist.mp3"
+          loop
+          ref={(e) => {
+            bgAudioRef.current = e;
+          }}
+        />
+        <TimerContents loading={loading} formattedTime={formattedTime} />
+      </>
+    )
+  } else if (timer?.win) {
+    content = (
+      <>
+        <ReactAudioPlayer
+          src="winaudio.mp3"
+          loop
+          ref={(e) => {
+            bgAudioRef.current = e;
+          }}
+        />
+        <TimerContents loading={loading} formattedTime={formattedTime} />
+      </>
+    )
+  } else if (timer?.lose) {
+    content = (
+      <>
+        <ReactAudioPlayer
+          src="loseaudio.mp3"
+          loop
+          ref={(e) => {
+            bgAudioRef.current = e;
+          }}
+        />
+        <TimerContents loading={loading} formattedTime={formattedTime} />
+      </>
+    )
   }
 
   return (

@@ -62,7 +62,9 @@ function Timer({ db }) {
   };
 
   const onStart = () => {
-    timer.intro = true;
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      intro: true
+    });
 
     content = (
       <TimerContents loading={loading} formattedTime={formattedTime} />

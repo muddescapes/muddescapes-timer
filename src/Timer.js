@@ -13,7 +13,6 @@ const LOSE_DELAY = 17000;
 const TIMER_SECS = 2700; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
-var has_lost = false;
 
 function formatMsecs(msecs) {
   // format time in MM:SS
@@ -107,8 +106,6 @@ function Timer({ db }) {
   };
 
   const onReset = () => {
-    has_lost = false;
-
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
@@ -168,7 +165,6 @@ function Timer({ db }) {
       </>
     );
   } else if (timer?.lose) {
-    has_lost = true;
     new Audio("loseaudio.mp3").play();
 
     setTimeout(function() {

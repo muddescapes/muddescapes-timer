@@ -13,7 +13,9 @@ const LOSE_DELAY = 17000;
 const TIMER_SECS = 2700; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
-var has_lost = false;
+var played_lose = false;
+var played_win = false;
+var played_intro = false;
 
 function formatMsecs(msecs) {
   // format time in MM:SS
@@ -60,7 +62,7 @@ function Timer({ db }) {
   };
 
   const onStart = () => {
-    new Audio("introtwist.mp3").play();
+    timer.intro = true;
 
     content = (
       <TimerContents loading={loading} formattedTime={formattedTime} />
@@ -69,6 +71,7 @@ function Timer({ db }) {
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
         startTime: currTime + INTRO_DELAY,
+        intro: false,
       });
     }, INTRO_DELAY);
   };
@@ -87,35 +90,28 @@ function Timer({ db }) {
       return;
     }
 
-    // updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-    //   secs: getRemainingMsecs() / 1000,
-    //   startTime: null,
-    // });
-
-    setTimeout(function() {
-      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-        credits: true
-      });
-    }, WIN_DELAY);
-
-    new Audio("winaudio.mp3").play();
-
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
         secs: getRemainingMsecs() / 1000,
         startTime: null,
         win: true,
     });
+
+    setTimeout(function() {
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        wincredits: true
+      });
+    }, WIN_DELAY);
   };
 
   const onReset = () => {
-    has_lost = false;
-
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
       win: false,
-      credits: false,
+      lose: false,
+      wincredits: false,
       losecredits: false,
+      intro: false,
     });
   };
 
@@ -134,8 +130,6 @@ function Timer({ db }) {
     formattedTime = formatMsecs(getRemainingMsecs());
   }
 
-  console.log("timer screen");
-
   var content = (
     <>
       <ReactAudioPlayer
@@ -150,14 +144,10 @@ function Timer({ db }) {
     </>
   );
 
-  if (timer?.credits) {
-    console.log("win");
-    content = (
-      <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
-    );
-  } else if (getRemainingMsecs() <= 0 && !has_lost) {
-    has_lost = true;
-    new Audio("loseaudio.mp3").play();
+  if (getRemainingMsecs() <= 0) {
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      lose: true
+    });
 
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
@@ -166,9 +156,34 @@ function Timer({ db }) {
     }, LOSE_DELAY);
   }
 
+  if (!timer?.lose) {
+    played_lose = false;
+  }
+  if (!timer?.win) {
+    played_win = false;
+  }
+  if (!timer?.intro) {
+    played_intro = false;
+  }
+
+  if (timer?.win && !played_win) {
+    new Audio("winaudio.mp3").play();
+    played_win = true;
+  } else if (timer?.lose && !played_lose) {
+    new Audio("loseaudio.mp3").play();
+    played_lose = true;
+  } else if (timer?.intro && !played_intro) {
+    new Audio("introtwist.mp3").play();
+    played_intro = true;
+  }
+
   if (timer?.losecredits) {
     content = (
       <LoseScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
+    );
+  } else if (timer?.wincredits) {
+    content = (
+      <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
   }
 

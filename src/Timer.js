@@ -9,7 +9,6 @@ import ReactAudioPlayer from "react-audio-player";
 
 const INTRO_DELAY = 29000;
 const WIN_DELAY = 18000;
-const LOSE_DELAY = 17000;
 const TIMER_SECS = 2700; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";

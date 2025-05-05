@@ -13,6 +13,11 @@ const LOSE_DELAY = 17000;
 const TIMER_SECS = 2700; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
+const REFRESH_PERIOD = 100;
+
+var introStarted = false;
+var winStarted = false;
+var loseStarted = false;
 
 function formatMsecs(msecs) {
   // format time in MM:SS
@@ -48,6 +53,9 @@ function Timer({ db }) {
   if (error) {
     console.error(error);
   }
+  if (currTime % 1000 < 100) {
+    console.log("timer", timer);
+  }
 
   const getRemainingMsecs = () => {
     if (timer) {
@@ -59,16 +67,16 @@ function Timer({ db }) {
   };
 
   const onStart = () => {
-    timer.intro = true;
-
-    content = (
-      <TimerContents loading={loading} formattedTime={formattedTime} />
-    );
-
+    // Send the start signal to all instances
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+      intro: true
+    });
+    // After the intro speech, set startTime to the then-current time.
+    // Setting startTime starts the countdown.
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
         startTime: currTime + INTRO_DELAY,
-        intro: false,
+        intro: false
       });
     }, INTRO_DELAY);
   };
@@ -87,22 +95,17 @@ function Timer({ db }) {
       return;
     }
 
-    // updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-    //   secs: getRemainingMsecs() / 1000,
-    //   startTime: null,
-    // });
-
+    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        secs: getRemainingMsecs() / 1000,
+        startTime: null,  // Stops the countdown
+        win: true,  // Trigger win speech on all instances
+    });
+    // After the win speech, signal all instances to roll the credits
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
         credits: true
       });
     }, WIN_DELAY);
-
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-        secs: getRemainingMsecs() / 1000,
-        startTime: null,
-        win: true,
-    });
   };
 
   const onReset = () => {
@@ -111,7 +114,6 @@ function Timer({ db }) {
       startTime: null,
       win: false,
       credits: false,
-      losecredits: false,
       intro: false,
     });
   };
@@ -121,7 +123,7 @@ function Timer({ db }) {
     // so updating every 100ms should be fine
     const interval = setInterval(() => {
       setCurrTime(Math.floor(new Date().getTime()));
-    }, 37);
+    }, REFRESH_PERIOD);
     return () => clearInterval(interval);
   }, []);
 
@@ -131,8 +133,7 @@ function Timer({ db }) {
     formattedTime = formatMsecs(getRemainingMsecs());
   }
 
-  console.log("timer screen");
-
+  // Default contents: timer screen
   var content = (
     <>
       <ReactAudioPlayer
@@ -147,49 +148,32 @@ function Timer({ db }) {
     </>
   );
 
-  if (timer?.credits) {
+  if (timer?.credits && timer?.win) {  // Credits with win music
     content = (
       <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
-  } else if (timer?.win) {
-    content = (
-      <>
-        <ReactAudioPlayer
-          src="winaudio.mp3"
-          volume = {0.1}
-          ref={(e) => {
-            bgAudioRef.current = e;
-          }}
-        />
-        <TimerContents loading={loading} formattedTime={formattedTime} />
-      </>
-    );
-  } else if (timer?.lose) {
-    new Audio("loseaudio.mp3").play();
-
-    setTimeout(function() {
-      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-        losecredits: true
-      });
-    }, LOSE_DELAY);
-  } else if (timer?.intro) {
-    content = (
-      <>
-        <ReactAudioPlayer
-          src="introtwist.mp3"
-          ref={(e) => {
-            bgAudioRef.current = e;
-          }}
-        />
-        <TimerContents loading={loading} formattedTime={formattedTime} />
-      </>
-    );
-  }
-
-  if (timer?.losecredits) {
+  } else if(timer?.credits && !timer?.win) {  // Credits with lose music
     content = (
       <LoseScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
+  }
+  if (timer?.win && !winStarted) {
+    winStarted = true;
+    new Audio("winaudio.mp3").play();
+  } else if (!timer?.win) {
+    winStarted = false;
+  }
+  if (timer?.lose && !loseStarted) {
+    loseStarted = true;
+    new Audio("loseaudio.mp3").play();
+  } else if (!timer?.lose) {
+    loseStarted = false;
+  }
+  if (timer?.intro && !introStarted) {
+    introStarted = true;
+    new Audio("introtwist.mp3").play();
+  } else if (!timer?.intro) {
+    introStarted = false;
   }
 
   return (

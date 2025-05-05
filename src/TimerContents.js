@@ -10,8 +10,8 @@ export default function TimerContents({ loading, formattedTime }) {
     <div className="timer-contents" style={{ pointerEvents: "none"}}>
       <div style={{position: "absolute"}}>
         <video
-          width="102%"
-          height="102%"
+          width="68%"
+          height="68%"
           src="bg_video.mp4"
           autoPlay
           muted

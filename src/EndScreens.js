@@ -5,20 +5,20 @@ import ReactAudioPlayer from "react-audio-player";
 //   return <div className="end-screen">{children}</div>;
 // }
 
-export function WinScreen({ finishedIn }) {
+export function WinScreen() {
   return (
     <div className="end-screen" style={{ pointerEvents: "none"}}>
       <div style={{position: "absolute"}}>
         <video
-          width="68%"
-          height="68%"
+          width="102%"
+          height="102%"
           src="creditsfa25.mp4"
           autoPlay
           muted
           loop
         ></video>
       </div>
-      <ReactAudioPlayer src="win.mp3" autoPlay />
+      <ReactAudioPlayer src="win.mp3" autoPlay volume = {0.05} />
     </div>
   );
 }
@@ -28,15 +28,16 @@ export function LoseScreen() {
     <div className="end-screen" style={{ pointerEvents: "none"}}>
       <div style={{position: "absolute"}}>
         <video
-          width="68%"
-          height="68%"
+          width="102%"
+          height="102%"
           src="creditsfa25.mp4"
+          volume = {0.00001}
           autoPlay
           muted
           loop
         ></video>
       </div>
-      <ReactAudioPlayer src="lose.mp3" autoPlay />
+      <ReactAudioPlayer src="lose.mp3" autoPlay volume = {0.05} />
     </div>
   );
 }

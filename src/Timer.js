@@ -7,9 +7,13 @@ import TimerContents from "./TimerContents";
 import { LoseScreen, WinScreen } from "./EndScreens";
 import ReactAudioPlayer from "react-audio-player";
 
-const TIMER_SECS = 2700; // 45:00
+const INTRO_DELAY = 29000;
+const WIN_DELAY = 18000;
+const LOSE_DELAY = 17000;
+const TIMER_SECS = 2700; // 2700 = 45:00
 const FIREBASE_COLLECTION = "timers";
 const FIREBASE_DOC = "timer1";
+var has_lost = false;
 
 function formatMsecs(msecs) {
   // format time in MM:SS
@@ -22,7 +26,7 @@ function formatMsecs(msecs) {
 function Timer({ db }) {
   // ref for audio player to play sound when settings popup opens
   // cannot autoplay due to browser restrictions (must interact first)
-  const bgAudioRef = React.useRef();
+  var bgAudioRef = React.useRef();
 
   // current time in milliseconds since the epoch
   const [currTime, setCurrTime] = useState(
@@ -56,9 +60,17 @@ function Timer({ db }) {
   };
 
   const onStart = () => {
-    updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      startTime: currTime,
-    });
+    new Audio("introtwist.mp3").play();
+
+    content = (
+      <TimerContents loading={loading} formattedTime={formattedTime} />
+    );
+
+    setTimeout(function() {
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        startTime: currTime + INTRO_DELAY,
+      });
+    }, INTRO_DELAY);
   };
 
   // timer pauses when startTime is null
@@ -75,18 +87,35 @@ function Timer({ db }) {
       return;
     }
 
+    // updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+    //   secs: getRemainingMsecs() / 1000,
+    //   startTime: null,
+    // });
+
+    setTimeout(function() {
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        credits: true
+      });
+    }, WIN_DELAY);
+
+    new Audio("winaudio.mp3").play();
+
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
-      secs: getRemainingMsecs() / 1000,
-      startTime: null,
-      win: true,
+        secs: getRemainingMsecs() / 1000,
+        startTime: null,
+        win: true,
     });
   };
 
   const onReset = () => {
+    has_lost = false;
+
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
       secs: TIMER_SECS,
       startTime: null,
       win: false,
+      credits: false,
+      losecredits: false,
     });
   };
 
@@ -105,10 +134,13 @@ function Timer({ db }) {
     formattedTime = formatMsecs(getRemainingMsecs());
   }
 
+  console.log("timer screen");
+
   var content = (
     <>
       <ReactAudioPlayer
         src="bg.mp3"
+        volume = {0.1}
         loop
         ref={(e) => {
           bgAudioRef.current = e;
@@ -118,12 +150,26 @@ function Timer({ db }) {
     </>
   );
 
-  if (timer?.win) {
+  if (timer?.credits) {
+    console.log("win");
     content = (
       <WinScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
     );
-  } else if (getRemainingMsecs() <= 0) {
-    content = <LoseScreen />;
+  } else if (getRemainingMsecs() <= 0 && !has_lost) {
+    has_lost = true;
+    new Audio("loseaudio.mp3").play();
+
+    setTimeout(function() {
+      updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
+        losecredits: true
+      });
+    }, LOSE_DELAY);
+  }
+
+  if (timer?.losecredits) {
+    content = (
+      <LoseScreen finishedIn={formatMsecs(TIMER_SECS * 1000 - getRemainingMsecs())} />
+    );
   }
 
   return (

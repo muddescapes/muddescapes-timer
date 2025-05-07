@@ -60,7 +60,7 @@ function Timer({ db }) {
   };
 
   const onStart = () => {
-    new Audio("introtwist.mp3").play();
+    new Audio("https://muddescapes.kev3u.com/introtwist.mp3").play();
 
     content = (
       <TimerContents loading={loading} formattedTime={formattedTime} />
@@ -98,7 +98,7 @@ function Timer({ db }) {
       });
     }, WIN_DELAY);
 
-    new Audio("winaudio.mp3").play();
+    new Audio("https://muddescapes.kev3u.com/winaudio.mp3").play();
 
     updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {
         secs: getRemainingMsecs() / 1000,
@@ -139,7 +139,7 @@ function Timer({ db }) {
   var content = (
     <>
       <ReactAudioPlayer
-        src="bg.mp3"
+        src="https://muddescapes.kev3u.com/bg.mp3"
         volume = {0.1}
         loop
         ref={(e) => {
@@ -157,7 +157,7 @@ function Timer({ db }) {
     );
   } else if (getRemainingMsecs() <= 0 && !has_lost) {
     has_lost = true;
-    new Audio("loseaudio.mp3").play();
+    new Audio("https://muddescapes.kev3u.com/loseaudio.mp3").play();
 
     setTimeout(function() {
       updateDoc(doc(db, FIREBASE_COLLECTION, FIREBASE_DOC), {

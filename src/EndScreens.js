@@ -12,13 +12,13 @@ export function WinScreen() {
         <video
           width="102%"
           height="102%"
-          src="creditsfa25.mp4"
+          src="https://muddescapes.kev3u.com/creditsfa25.mp4"
           autoPlay
           muted
           loop
         ></video>
       </div>
-      <ReactAudioPlayer src="win.mp3" autoPlay volume = {0.05} />
+      <ReactAudioPlayer src="https://muddescapes.kev3u.com/win.mp3" autoPlay volume = {0.05} />
     </div>
   );
 }
@@ -30,14 +30,14 @@ export function LoseScreen() {
         <video
           width="102%"
           height="102%"
-          src="creditsfa25.mp4"
+          src="https://muddescapes.kev3u.com/creditsfa25.mp4"
           volume = {0.00001}
           autoPlay
           muted
           loop
         ></video>
       </div>
-      <ReactAudioPlayer src="lose.mp3" autoPlay volume = {0.05} />
+      <ReactAudioPlayer src="https://muddescapes.kev3u.com/lose.mp3" autoPlay volume = {0.05} />
     </div>
   );
 }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="MuddEscapes Timer" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+        href="https://fonts.googleapis.com/css2?family=Poppins&display=swap"
+        rel="stylesheet"
+        />
+        <title>MuddEscapes Timer</title>
+        <link href="style.css" type="text/css" rel="stylesheet" />
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="display.js"></script>
+    </head>
+    <body>
+        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <div id="contents">
+            <video id="video" src="bg_video.mp4" width="100%" height="100%" autoplay muted loop></video>
+            <audio id="audio" src="" autoplay loop></audio>
+            <span id="timer-text"></span>
+        </div>
+        <div id="overlay" style="display: none">
+            <div id="menu-wrapper">
+                <div class="button" id="start-reset">Error</div>
+                <div class="button" id="play-pause">Error</div>
+                <div class="button" onclick="win()">Win</div>
+                <div class="button" style="width: 50%" onclick="setTime()">Set Time</div>
+                <input class="time-input" value="45" id="min" type="number" min="0" />:
+                <input class="time-input" value="00" id="sec" type="number" min="0" max="59.999" />
+            </div>
+        </div>
+    </body>
+</html>

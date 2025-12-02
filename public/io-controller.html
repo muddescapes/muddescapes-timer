@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MuddEscapes Timer | Controller</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="io-controller.js"></script>
+        <link href="controller.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <div class="button" id="start-reset">Error</div>
+        <div class="button" id="play-pause">Error</div>
+        <div class="button" onclick="win()">Win</div>
+        <div class="button" style="width: 50vw" onclick="setTime()">Set Time</div>
+        <input class="time-input" value="45" id="min" type="number" />:
+        <input class="time-input" value="00" id="sec" type="number" />
+    </body>
+</html>

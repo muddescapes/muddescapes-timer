@@ -69,30 +69,5 @@ app.get("/controller", async (req, res) => {
     res.sendFile("io-controller.html", {root: path.join(__dirname, "public")});
 });
 
-app.get("/bg.mp3", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.me/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/bg.mp3?v=1746491674788")
-});
-app.get("/bg_video.mp4", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.me/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/bg_video.mp4?v=1746491670685")
-});
-app.get("/creditsfa25.mp4", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.me/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/creditsfa25.mp4?v=1746491659816")
-});
-app.get("/introtwist.mp3", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.global/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/introtwist.mp3?v=1746491653731")
-});
-app.get("/lose.mp3", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.global/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/lose.mp3?v=1746491648940")
-});
-app.get("/loseaudio.mp3", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.global/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/loseaudio.mp3?v=1746491645021")
-});
-app.get("/win.mp3", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.global/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/win.mp3?v=1746491640718")
-});
-app.get("/winaudio.mp3", async (req, res) => {
-    res.redirect(302, "https://cdn.glitch.global/37d517f7-6eaf-4d8b-a2db-77e9c3c2a8a8/winaudio.mp3?v=1746491628997")
-});
-
 const port = process.env.PORT || 8142;
 server.listen(port, () => console.log(`App listening on port ${port}!`));

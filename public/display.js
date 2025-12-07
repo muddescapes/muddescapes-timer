@@ -101,6 +101,8 @@ function timerTick() {
         setDisplay(lose_video, lose_audio, "", lose_volume, false, elapsed - ROOM_TIME);
         timerTimeout = setTimeout(() => {
             setDisplay(lose_video, lose_credit_audio, "", lose_volume);
+            cur_money = STARTING_MONEY;
+            next_money = STARTING_MONEY;   
         }, 2.5 * LOSE_TIME); // Allows lose audio to play twice before going to lose credits audio
     } else {  // The outro has finished
         console.log("lose-credits");
@@ -109,8 +111,6 @@ function timerTick() {
 }
 
 async function reset() {
-    cur_money = STARTING_MONEY;
-    next_money = STARTING_MONEY;
     await fetch("/reset", {method: "POST"});
     document.getElementById("play-pause").value = "Start";
     document.getElementById("play-pause").onclick = start;
@@ -151,6 +151,8 @@ socket.on("win", time => {
     timerTimeout = setTimeout(() => {
         setDisplay(win_video, win_credit_audio, "", win_credit_volume);
     }, WIN_TIME);
+    cur_money = STARTING_MONEY;
+    next_money = STARTING_MONEY;
     document.getElementById("play-pause").innerHTML = "Start";
     document.getElementById("play-pause").onclick = start;
     document.getElementById("start-reset").innerHTML = "Reset";

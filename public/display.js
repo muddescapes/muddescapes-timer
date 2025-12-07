@@ -1,39 +1,49 @@
 const socket = io();
 
 // All times given in milliseconds
-const INTRO_TIME = 29 * 1000;  // Duration of intro speech
-const ROOM_TIME = 45 * 60 * 1000;  // Time to complete the room
-const LOSE_TIME = 17 * 1000;  // Lose speech duration
-const WIN_TIME = 18 * 1000;  // Win speech duration
+const ROOM_TIME = 75 * 60 * 1000;  // Time to complete the room
 const TICK_PERIOD = 100;  // Time between updates to timer text
+const LOSE_TIME = 1 * 1000;
+const WIN_TIME = 11 * 1000;
 
-function formatTime(ms) {
-    const secs = Math.floor(ms / 1000);
-    const mins = Math.floor(secs / 60);
-    const remainingSecs = secs % 60;
-    return `${mins}:${remainingSecs.toString().padStart(2, "0")}`;
+// Specific to FA25 money timer
+const STARTING_MONEY = 100000;
+const INTERVAL_MIN = 3000;
+const INTERVAL_MAX = 10000;
+const MONEY_NOISE = 10;
+
+var cur_money = STARTING_MONEY;
+var next_money = STARTING_MONEY;
+var update_money = 0;
+
+function formatTime(money) {
+    const thousands = Math.floor(money / 1000);
+    const ones = Math.floor(money) % 1000;
+    const cents = Math.floor(100 * money) % 100;
+    if (thousands > 0) {
+        return `$${thousands},${ones.toString().padStart(3, "0")}.${cents.toString().padStart(2, "0")}`;
+    } else if (ones > 0) {
+        return `$${ones}.${cents.toString().padStart(2, "0")}`;
+    } else {
+        return `$0.${cents.toString().padStart(2, "0")}`;
+    }
 }
 
-const timer_video = "bg_video.mp4";
-const intro_video = timer_video;
-const win_video = timer_video;
-const lose_video = timer_video;
-const win_credit_video = "creditsfa25.mp4";
-const lose_credit_video = win_credit_video;
+const timer_video = "bg_video.mov";
+const win_video = "win_video.mp4";
+const lose_video = "lose_video.mp4";
 
-const intro_audio = "introtwist.mp3";
-const timer_audio = "bg.mp3";
-const win_audio = "winaudio.mp3";
-const lose_audio = "loseaudio.mp3";
+const timer_audio = "bg_audio.mp3";
+const win_audio = "win_audio.m4a";
+const lose_audio = "lose_audio.mp3";
 const win_credit_audio = "win.mp3";
-const lose_credit_audio = "lose.mp3";
+const lose_credit_audio = win_credit_audio;
 
-const intro_volume = 1;
 const timer_volume = 0.15;
 const win_volume = 0.5;
 const lose_volume = 0.5;
 const win_credit_volume = 0.1;
-const lose_credit_volume = 0.2;
+const lose_credit_volume = win_credit_volume;
 
 /** The time the current run started, or null if there is no current run. */
 var started = null;
@@ -73,30 +83,34 @@ function setDisplay(video, audio, text, volume=1, force=false, timestamp=0) {
 }
 function timerTick() {
     const elapsed = Date.now() - started;
-    if (elapsed < 0) {  // The intro has not started yet
-        console.log("pre-start");
-        timerTimeout = setTimeout(timerTick, -elapsed);
-        setDisplay(timer_video, timer_audio, "", timer_volume, false);
-    } else if (elapsed < INTRO_TIME) {  // The intro has not finished yet
-        console.log("intro");
-        timerTimeout = setTimeout(timerTick, INTRO_TIME - elapsed);
-        setDisplay(intro_video, intro_audio, formatTime(ROOM_TIME), intro_volume, true, elapsed);
-    } else if (elapsed < INTRO_TIME + ROOM_TIME) {  // The timer is still running
+    if (elapsed < ROOM_TIME) {  // The timer is still running
         console.log("tick", document.getElementById("video").src, timer_video);
         timerTimeout = setTimeout(timerTick, TICK_PERIOD);
-        const remaining = INTRO_TIME + ROOM_TIME - elapsed;
-        setDisplay(timer_video, timer_audio, formatTime(remaining), timer_volume, false, elapsed - INTRO_TIME);
-    } else if (elapsed < INTRO_TIME + ROOM_TIME + LOSE_TIME) {  // The time is up, but the outro has not finished
-        console.log("lost");
-        setDisplay(lose_video, lose_audio, formatTime(0), lose_volume, false, elapsed - INTRO_TIME - ROOM_TIME);
-        timerTimeout = setTimeout(timerTick, INTRO_TIME + ROOM_TIME + LOSE_TIME - elapsed);
+        const remaining = ROOM_TIME - elapsed;
+        
+        // update money count based on fraction of time left to go
+        update_money -= 1;
+        if (update_money <= 0) {
+            cur_money = next_money;
+            update_money = Math.floor((INTERVAL_MIN + Math.random() * (INTERVAL_MAX - INTERVAL_MIN)) / TICK_PERIOD);
+            next_money = cur_money - (cur_money * (update_money+1) * TICK_PERIOD / remaining) + (2 * MONEY_NOISE * Math.random() - MONEY_NOISE);
+        }
+
+        setDisplay(timer_video, timer_audio, formatTime(cur_money), timer_volume, false, elapsed);
+    } else if (elapsed < ROOM_TIME + LOSE_TIME) { // The time is up, but the outro has not finished
+        setDisplay(lose_video, lose_audio, "", lose_volume, false, elapsed - ROOM_TIME);
+        timerTimeout = setTimeout(() => {
+            setDisplay(lose_video, lose_credit_audio, "", lose_volume);
+        }, 2.5 * LOSE_TIME); // Allows lose audio to play twice before going to lose credits audio
     } else {  // The outro has finished
         console.log("lose-credits");
-        setDisplay(lose_credit_video, lose_credit_audio, "", lose_credit_volume);
+        setDisplay(lose_video, lose_credit_audio, "", lose_volume);
     }
 }
 
 async function reset() {
+    cur_money = STARTING_MONEY;
+    next_money = STARTING_MONEY;
     await fetch("/reset", {method: "POST"});
     document.getElementById("play-pause").value = "Start";
     document.getElementById("play-pause").onclick = start;
@@ -116,7 +130,7 @@ async function resume() {
 async function setTime() {
     const sec = parseInt(document.getElementById("sec").value);
     const min = parseInt(document.getElementById("min").value);
-    const ms = Math.round(INTRO_TIME + ROOM_TIME - (60 * min + sec) * 1000);
+    const ms = Math.round(ROOM_TIME - (60 * min + sec) * 1000);
     await fetch(`/pause/${ms}`, {method: "POST"});
 }
 
@@ -133,9 +147,9 @@ socket.on("running", time => {
 socket.on("win", time => {
     console.log("win", time);
     clearTimeout(timerTimeout);
-    setDisplay(win_video, win_audio, formatTime(ROOM_TIME - time), win_volume, true);
+    setDisplay(win_video, win_audio, "", win_volume, true);
     timerTimeout = setTimeout(() => {
-        setDisplay(win_credit_video, win_credit_audio, "", win_credit_volume);
+        setDisplay(win_video, win_credit_audio, "", win_credit_volume);
     }, WIN_TIME);
     document.getElementById("play-pause").innerHTML = "Start";
     document.getElementById("play-pause").onclick = start;
@@ -145,7 +159,7 @@ socket.on("win", time => {
 socket.on("paused", time => {
     console.log("paused", time);
     clearTimeout(timerTimeout);
-    setDisplay(timer_video, timer_audio, formatTime(Math.min(INTRO_TIME + ROOM_TIME - time, ROOM_TIME)), timer_volume);
+    setDisplay(timer_video, timer_audio, formatTime(cur_money), timer_volume);
     document.getElementById("play-pause").innerHTML = "Resume";
     document.getElementById("play-pause").onclick = resume;
     if (!time) {

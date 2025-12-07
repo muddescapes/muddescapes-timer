@@ -6,6 +6,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-y: hidden;
+  background-color: black;
 }
 
 .contents {
@@ -14,7 +15,7 @@ body {
   align-items: center;
   justify-content: center;
   background-color: black;
-  color: white;
+  color: black;
   overflow: hidden;
 }
 
@@ -25,9 +26,13 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-family: papyrus, Times, "Times New Roman", sans-serif;
-  font-size: 288px;
-  color: white;
+  font-family: sans-serif;
+  font-size: 218px;
+  font-weight: bold;
+  -webkit-text-stroke-width: 3px; /* Adjust thickness */
+  -webkit-text-stroke-color: white; /* Adjust color */
+  -webkit-text-fill-color: gold; /* Set text color (fill) */
+  text-shadow: 10px 10px 0px black;
 }
 #overlay {
   font-family: Arial, Helvetica, sans-serif;
